@@ -57,7 +57,7 @@ export default function StoryCard({ story, sponsored }: StoryCardProps) {
         {/* CTA */}
         <div className="flex items-center justify-between">
           <span className="font-body flex items-center gap-1 text-reunion-lava font-bold text-sm group-hover:gap-2 transition-all">
-            Lir' l'histoir'
+            Lir' l'histoire
             <ArrowRight className="w-4 h-4" />
           </span>
           {/* Trait créole */}

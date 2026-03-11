@@ -15,10 +15,10 @@ export default function Header() {
             </div>
             <div>
               <h1 className="font-display text-2xl font-bold tracking-wide leading-none">
-                Zistoire
+                Zistoir
               </h1>
               <p className="text-xs font-body text-reunion-turquoise-light tracking-widest uppercase">
-                Histoir' Réyoné
+                Découvrir l'histoire de La Réunion
               </p>
             </div>
           </Link>

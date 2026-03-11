@@ -20,8 +20,8 @@ export default function Footer() {
                 🌋
               </div>
               <div>
-                <h3 className="font-display text-2xl font-bold">Zistoire</h3>
-                <p className="text-reunion-turquoise-light text-xs tracking-widest uppercase font-body">Histoir' Réyoné</p>
+                <h3 className="font-display text-2xl font-bold">Zistoir</h3>
+                <p className="text-reunion-turquoise-light text-xs tracking-widest uppercase font-body">Découvre l'histoire de La Réunion</p>
               </div>
             </div>
             <p className="text-reunion-sand-dark/70 font-body text-sm leading-relaxed">
@@ -34,7 +34,7 @@ export default function Footer() {
           <div>
             <h4 className="font-display text-lg font-bold mb-4 text-reunion-sun">À propos</h4>
             <p className="text-reunion-sand-dark/70 font-body text-sm leading-relaxed">
-              Zistoire est une initiative culturelle qui met en lumière le patrimoine
+              Zistoir est une initiative culturelle qui met en lumière le patrimoine
               exceptionnel de La Réunion à travers des histoires interactives accessibles
               depuis l'hôtel.
             </p>
@@ -58,7 +58,7 @@ export default function Footer() {
         {/* Bas de footer */}
         <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-2">
           <p className="font-body text-reunion-sand-dark/50 text-sm">
-            &copy; {new Date().getFullYear()} Zistoire — Tout' zistoir' Réyoné
+            &copy; {new Date().getFullYear()} Zistoir — Tout' zistoir' Réyoné
           </p>
           <p className="font-body text-reunion-sand-dark/40 text-xs">
             🌋 Made with ❤️ à La Réunion
