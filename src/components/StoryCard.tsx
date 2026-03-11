@@ -8,41 +8,60 @@ interface StoryCardProps {
 }
 
 export default function StoryCard({ story, sponsored }: StoryCardProps) {
+  // Couleur par catégorie
+  const categoryColor: Record<string, string> = {
+    'Personnalités':       'bg-reunion-lava text-white',
+    'Lieux':               'bg-reunion-green text-white',
+    'Nature':              'bg-reunion-turquoise text-white',
+    'Sport & Culture':     'bg-reunion-sun text-reunion-dark',
+    'Culture & Patrimoine':'bg-reunion-dark-mid text-white',
+  };
+  const catStyle = categoryColor[story.category] ?? 'bg-reunion-lava text-white';
+
   return (
     <Link
       to={`/histoires/${story.slug}`}
-      className="group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
+      className="group block bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 transform hover:-translate-y-2"
     >
-      <div className="relative h-64 overflow-hidden">
+      {/* Image */}
+      <div className="relative h-52 overflow-hidden">
         <img
           src={story.image}
           alt={story.title}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-orange-400 uppercase tracking-wider">
-              {story.category}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+        {/* Badges */}
+        <div className="absolute top-3 left-3 flex gap-2">
+          <span className={`font-body text-xs font-bold px-3 py-1 rounded-full ${catStyle}`}>
+            {story.category}
+          </span>
+          {sponsored && (
+            <span className="font-body bg-reunion-sun text-reunion-dark text-xs px-3 py-1 rounded-full font-bold shadow">
+              ⭐ Partenaire
             </span>
-            {sponsored && (
-              <span className="bg-orange-500 text-white text-xs px-3 py-1 rounded-full font-semibold">
-                Partenaire
-              </span>
-            )}
-          </div>
+          )}
         </div>
       </div>
-      <div className="p-6">
-        <h3 className="text-xl font-bold text-slate-900 mb-2 group-hover:text-orange-600 transition-colors">
+
+      {/* Corps */}
+      <div className="p-5">
+        <h3 className="font-display text-xl font-bold text-reunion-dark mb-2 group-hover:text-reunion-lava transition-colors leading-tight">
           {story.title}
         </h3>
-        <p className="text-slate-600 text-sm mb-4 line-clamp-2">
+        <p className="font-body text-gray-500 text-sm mb-4 line-clamp-2 leading-relaxed">
           {story.shortDescription}
         </p>
-        <div className="flex items-center text-orange-600 font-semibold text-sm">
-          <span>Découvrir l'histoire</span>
-          <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform" />
+
+        {/* CTA */}
+        <div className="flex items-center justify-between">
+          <span className="font-body flex items-center gap-1 text-reunion-lava font-bold text-sm group-hover:gap-2 transition-all">
+            Lir' l'histoir'
+            <ArrowRight className="w-4 h-4" />
+          </span>
+          {/* Trait créole */}
+          <div className="w-8 h-1 rounded-full bg-gradient-to-r from-reunion-lava to-reunion-sun" />
         </div>
       </div>
     </Link>

@@ -9,41 +9,46 @@ interface HorizontalStoryCarouselProps {
 
 export default function HorizontalStoryCarousel({ stories, sponsored }: HorizontalStoryCarouselProps) {
   return (
-    <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
+    <div className="flex gap-5 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory -mx-2 px-2">
       {stories.map((story) => (
         <Link
           key={story.slug}
           to={`/histoires/${story.slug}`}
-          className="group flex-shrink-0 w-80 bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 snap-start"
+          className="group flex-shrink-0 w-72 md:w-80 bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 transform hover:-translate-y-2 snap-start"
         >
-          <div className="relative h-56 overflow-hidden">
+          {/* Image */}
+          <div className="relative h-48 overflow-hidden">
             <img
               src={story.image}
               alt={story.title}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-            <div className="absolute bottom-0 left-0 right-0 p-5">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-orange-400 uppercase tracking-wider">
+            <div className="absolute inset-0 bg-gradient-to-t from-reunion-dark/80 via-black/30 to-transparent" />
+
+            {/* Titre sur l'image */}
+            <div className="absolute bottom-0 left-0 right-0 p-4">
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-body text-xs font-bold text-reunion-sun uppercase tracking-widest">
                   {story.category}
                 </span>
                 {sponsored && (
-                  <span className="bg-orange-500 text-white text-xs px-3 py-1 rounded-full font-semibold shadow-lg">
-                    Mis en avant
+                  <span className="font-body bg-reunion-sun text-reunion-dark text-xs px-2 py-0.5 rounded-full font-bold">
+                    ⭐ Mis en avant
                   </span>
                 )}
               </div>
-              <h3 className="text-white font-bold text-lg mb-1">{story.title}</h3>
+              <h3 className="font-display text-white font-bold text-base leading-snug">{story.title}</h3>
             </div>
           </div>
-          <div className="p-5">
-            <p className="text-slate-600 text-sm mb-4 line-clamp-2">
+
+          {/* Corps */}
+          <div className="p-4">
+            <p className="font-body text-gray-500 text-sm mb-3 line-clamp-2 leading-relaxed">
               {story.shortDescription}
             </p>
-            <div className="flex items-center text-orange-600 font-semibold text-sm">
-              <span>Découvrir</span>
-              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform" />
+            <div className="flex items-center gap-1 text-reunion-lava font-body font-bold text-sm group-hover:gap-2 transition-all">
+              <span>Dékouvr'</span>
+              <ArrowRight className="w-4 h-4" />
             </div>
           </div>
         </Link>

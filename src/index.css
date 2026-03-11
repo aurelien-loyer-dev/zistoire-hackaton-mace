@@ -4,7 +4,11 @@
 
 @layer base {
   body {
-    @apply antialiased;
+    @apply antialiased font-body bg-reunion-cream text-reunion-dark;
+    font-family: 'Nunito', sans-serif;
+  }
+  h1, h2, h3, h4, h5 {
+    font-family: 'Playfair Display', Georgia, serif;
   }
 }
 
@@ -12,9 +16,48 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  .text-shadow {
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  }
+  .text-shadow-sm {
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  }
 }
+
+/* Motif batik créole subtil */
+.creole-pattern {
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(0, 159, 183, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(26, 92, 56, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 60% 80%, rgba(249, 168, 37, 0.05) 0%, transparent 40%);
+}
+
+/* Bordure décorative créole */
+.creole-border {
+  border-image: linear-gradient(90deg, #d9472b, #f9a825, #009fb7, #1a5c38) 1;
+}
+
+/* Animation d'entrée */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Trait décoratif sous les titres */
+.title-underline::after {
+  content: '';
+  display: block;
+  height: 4px;
+  width: 60px;
+  background: linear-gradient(90deg, #d9472b, #f9a825);
+  border-radius: 2px;
+  margin-top: 8px;
+}
+
