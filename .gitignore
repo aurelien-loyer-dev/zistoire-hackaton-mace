@@ -21,6 +21,7 @@ build/
 *.iml
 *.suo
 *.sw?
+.vscode/
 
 # System files
 .DS_Store
@@ -48,3 +49,6 @@ coverage/
 # Misc
 *.pem
 .cache/
+
+# Python
+__pycache__

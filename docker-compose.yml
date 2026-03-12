@@ -31,7 +31,9 @@ services:
       QRCODE_SERVICE_URL: http://qrcode-service:5000
       UPLOAD_DIR: /data/uploads
       QRCODE_DIR: /data/qrcodes
-      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-http://localhost:5173}
+      HOST_IP: ${HOST_IP:-localhost}
+      PUBLIC_SITE_URL: http://${HOST_IP:-localhost}:5173
+      ADMIN_BACKEND_URL: http://${HOST_IP:-localhost}:3001
     depends_on:
       db:
         condition: service_healthy
@@ -61,7 +63,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      REACT_APP_BACKEND_URL: http://localhost:3001
+      REACT_APP_BACKEND_URL: http://${HOST_IP:-localhost}:3001
+      HOST: 0.0.0.0
     depends_on:
       - backend
     volumes:
@@ -77,6 +80,7 @@ services:
       - "3002:3002"
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      CLIENT_URL: http://${HOST_IP:-localhost}:5173
     depends_on:
       db:
         condition: service_healthy
@@ -89,7 +93,7 @@ services:
     ports:
       - "5173:5173"
     environment:
-      VITE_API_URL: http://localhost:3002
+      VITE_API_URL: http://${HOST_IP:-localhost}:3002
     depends_on:
       - client-api
     volumes:

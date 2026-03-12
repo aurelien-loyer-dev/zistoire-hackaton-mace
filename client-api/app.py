@@ -8,6 +8,7 @@ app = Flask(__name__)
 CORS(app)
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
+CLIENT_URL = os.environ.get("CLIENT_URL", "http://localhost:5173")
 
 STORIES_QUERY = """
     SELECT
@@ -45,6 +46,7 @@ def row_to_story(row):
         "isSponsored": bool(row["partner"]),
         "partnerName": row["partner_name"] or None,
         "partnerUrl": row["link"] or None,
+        "internalLink": f"{CLIENT_URL}/histoires/{row['slug']}",
         "shortDescription": row["description"] or "",
         "storySlides": [item["content"] for item in learn_more],
         "fullText": row["history"] or "",

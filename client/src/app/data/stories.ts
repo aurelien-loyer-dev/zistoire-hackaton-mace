@@ -8,6 +8,7 @@ export interface Story {
   isSponsored: boolean;
   partnerName?: string;
   partnerUrl?: string;
+  internalLink?: string;
   shortDescription: string;
   storySlides: string[];
   fullText: string;
