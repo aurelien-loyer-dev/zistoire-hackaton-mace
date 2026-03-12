@@ -3,8 +3,18 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Panel MACE</title>
-    <style>* { margin: 0; padding: 0; box-sizing: border-box; }</style>
+    <title>Zistoir — Administration</title>
+    <style>
+      *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+      body { background: #f5f0e8; color: #2d2416; }
+      input:focus, textarea:focus, select:focus {
+        border-color: #A0522D !important;
+        box-shadow: 0 0 0 3px rgba(160,82,45,0.12);
+      }
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: #f5f0e8; }
+      ::-webkit-scrollbar-thumb { background: #D4C4A8; border-radius: 3px; }
+    </style>
   </head>
   <body>
     <div id="root"></div>

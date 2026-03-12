@@ -17,10 +17,13 @@ export function Home() {
       <HeroSection />
 
       <main id="stories" className="py-16">
-        {loading && (
-          <div className="container mx-auto px-4 py-16 text-center">
-            <p className="text-lg" style={{ color: "var(--muted-foreground)" }}>Chargement des histoires...</p>
-          </div>
+        {/* Current Events Section */}
+        {currentEventStories.length > 0 && (
+          <HorizontalStoryCarousel
+            stories={currentEventStories}
+            title="Histoires liées à l'actualité"
+            subtitle="Découvrez les récits en lien avec les événements du moment"
+          />
         )}
         {error && (
           <div className="container mx-auto px-4 py-8">
