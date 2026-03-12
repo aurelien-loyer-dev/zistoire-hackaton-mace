@@ -14,6 +14,8 @@ function App() {
   const [link, setLink] = useState("");
   const [intro, setIntro] = useState("");
   const [history, setHistory] = useState("");
+  const [partner, setPartner] = useState(false);
+  const [activityType, setActivityType] = useState("cultural");
   const [learnMore1, setLearnMore1] = useState("");
   const [learnMore2, setLearnMore2] = useState("");
   const [learnMore3, setLearnMore3] = useState("");
@@ -68,6 +70,8 @@ function App() {
     formData.append("link", link.trim());
     formData.append("intro", intro.trim());
     formData.append("history", history.trim());
+    formData.append("partner", String(partner));
+    formData.append("type", activityType);
     formData.append("learn_more_1", learnMore1.trim());
     formData.append("learn_more_2", learnMore2.trim());
     formData.append("learn_more_3", learnMore3.trim());
@@ -88,6 +92,8 @@ function App() {
         setLink("");
         setIntro("");
         setHistory("");
+        setPartner(false);
+        setActivityType("cultural");
         setLearnMore1("");
         setLearnMore2("");
         setLearnMore3("");
@@ -194,6 +200,37 @@ function App() {
                       style={{ ...inputStyle, ...(formError && !link.trim() ? errorInputStyle : {}) }}
                     />
                   </label>
+
+                  <div style={{ display: "flex", gap: 12 }}>
+                    <label style={{ ...labelStyle, flex: 1 }}>
+                      Type <span style={requiredMarkStyle}>*</span>
+                      <select
+                        value={activityType}
+                        onChange={(e) => setActivityType(e.target.value)}
+                        style={{ ...inputStyle, cursor: "pointer" }}
+                      >
+                        <option value="cultural">Culturel</option>
+                        <option value="favorite">Favori</option>
+                      </select>
+                    </label>
+
+                    <label style={{ ...labelStyle, flex: 1 }}>
+                      Partenaire
+                      <div style={toggleRowStyle}>
+                        <span style={{ color: partner ? "#374151" : "#9ca3af", fontSize: 13 }}>
+                          {partner ? "Oui" : "Non"}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setPartner((p) => !p)}
+                          style={{ ...toggleStyle, background: partner ? "#0070f3" : "#d1d5db" }}
+                          aria-label="Toggle partenaire"
+                        >
+                          <span style={{ ...toggleThumbStyle, transform: partner ? "translateX(18px)" : "translateX(2px)" }} />
+                        </button>
+                      </div>
+                    </label>
+                  </div>
 
                   <label style={labelStyle}>
                     Description
@@ -548,6 +585,38 @@ const formActionsStyle = {
   marginTop: 24,
   paddingTop: 16,
   borderTop: "1px solid #e5e7eb",
+};
+
+const toggleRowStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: 10,
+  marginTop: 5,
+  height: 38,
+};
+
+const toggleStyle = {
+  position: "relative",
+  width: 40,
+  height: 22,
+  border: "none",
+  borderRadius: 11,
+  cursor: "pointer",
+  padding: 0,
+  transition: "background 0.2s",
+  flexShrink: 0,
+};
+
+const toggleThumbStyle = {
+  position: "absolute",
+  top: 2,
+  width: 18,
+  height: 18,
+  background: "#fff",
+  borderRadius: "50%",
+  boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
+  transition: "transform 0.2s",
+  display: "block",
 };
 
 export default App;
