@@ -1,0 +1,23 @@
+import { Logo } from "./Logo";
+
+export function Footer() {
+  return (
+    <footer className="w-full border-t border-border/50 py-12" style={{ background: "var(--sand-beige)" }}>
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex flex-col items-center md:items-start gap-2">
+            <Logo variant="large" />
+            <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+              Découvrez l'histoire de La Réunion
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center md:items-end gap-2 text-sm" style={{ color: "var(--muted-foreground)" }}>
+            <p>© 2026 Zistoir - Tous droits réservés</p>
+            <p>Une expérience immersive de l'histoire réunionnaise</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
