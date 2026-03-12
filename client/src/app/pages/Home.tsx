@@ -12,7 +12,7 @@ export function Home() {
   const sponsoredStories = stories.filter((s) => s.isSponsored);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background transition-colors duration-300">
       <Header />
       <HeroSection />
 

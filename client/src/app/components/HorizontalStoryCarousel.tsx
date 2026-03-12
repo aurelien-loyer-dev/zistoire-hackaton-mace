@@ -42,7 +42,7 @@ export function HorizontalStoryCarousel({ stories, title, subtitle }: Horizontal
           {/* Scroll Buttons */}
           <button
             onClick={() => scroll("left")}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-card shadow-lg flex items-center justify-center hover:scale-110 transition-all duration-300"
             style={{ color: "var(--ocean-blue)" }}
             aria-label="Défiler vers la gauche"
           >
@@ -51,7 +51,7 @@ export function HorizontalStoryCarousel({ stories, title, subtitle }: Horizontal
 
           <button
             onClick={() => scroll("right")}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-card shadow-lg flex items-center justify-center hover:scale-110 transition-all duration-300"
             style={{ color: "var(--ocean-blue)" }}
             aria-label="Défiler vers la droite"
           >

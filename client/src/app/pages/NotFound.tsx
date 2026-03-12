@@ -4,7 +4,7 @@ import { Footer } from "../components/Footer";
 
 export function NotFound() {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col transition-colors duration-300">
       <Header />
       <main className="flex-1 flex items-center justify-center">
         <div className="container mx-auto px-4 text-center">

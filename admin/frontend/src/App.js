@@ -14,28 +14,168 @@ const ACTIVITY_TYPES = [
   { value: "event",      label: "Événement",      color: "#C62828" },
   { value: "wellness",   label: "Bien-être",      color: "#00838F" },
   { value: "family",     label: "Famille",        color: "#E65100" },
-  { value: "nocturnal",  label: "Nocturne",       color: "#37474F" },
+  { value: "nocturnal",  label: "Nocturne",       color: "#546E7A" },
   { value: "tech",       label: "Technologique",  color: "#283593" },
 ];
 const typeMap = Object.fromEntries(ACTIVITY_TYPES.map((t) => [t.value, t]));
 
-// ── Design tokens (aligned with public site) ──────────────
-const C = {
-  terracotta: "#A0522D",
-  terracottaLight: "#c4693a",
-  oceanBlue: "#0A4C7E",
-  tropicalGreen: "#2D8659",
-  sand: "#D4C4A8",
-  sandLight: "#f5f0e8",
-  sandBorder: "#e0d4bc",
-  text: "#2d2416",
-  muted: "#7a6e61",
-  white: "#ffffff",
-  error: "#c0392b",
-  errorBg: "#fff5f3",
+// ── Theme palettes ────────────────────────────────────────
+const LIGHT = {
+  terracotta: "#A0522D", terracottaLight: "#c4693a", tropicalGreen: "#2D8659",
+  sand: "#D4C4A8", bg: "#f5f0e8", surface: "#ffffff", surfaceHover: "#f5f0e8",
+  border: "#e0d4bc", text: "#2d2416", textSecondary: "#7a6e61",
+  inputBg: "#f5f0e8", overlay: "rgba(45,36,22,0.5)",
+  shadow: "0 2px 12px rgba(0,0,0,0.06)", shadowHover: "0 8px 32px rgba(160,82,45,0.15)",
+  headerShadow: "0 1px 8px rgba(0,0,0,0.06)", modalShadow: "0 24px 64px rgba(45,36,22,0.3)",
+  submitShadow: "0 2px 8px rgba(160,82,45,0.35)", toastShadow: "0 4px 20px rgba(0,0,0,0.25)",
+  error: "#c0392b", errorBg: "#fff5f3", errorBorder: "#f5c6c1",
+  deleteHoverBg: "#fff5f3", toggleOff: "#d1d5db", logoBlend: "multiply",
 };
 
+const DARK = {
+  terracotta: "#c4693a", terracottaLight: "#d88555", tropicalGreen: "#5cb88a",
+  sand: "#2a2a38", bg: "#0f0f17", surface: "#1a1a26", surfaceHover: "#222232",
+  border: "#2a2a3a", text: "#e4e2df", textSecondary: "#8888a0",
+  inputBg: "#141420", overlay: "rgba(0,0,0,0.7)",
+  shadow: "0 2px 12px rgba(0,0,0,0.3)", shadowHover: "0 8px 32px rgba(196,105,58,0.25)",
+  headerShadow: "0 1px 8px rgba(0,0,0,0.4)", modalShadow: "0 24px 64px rgba(0,0,0,0.6)",
+  submitShadow: "0 2px 8px rgba(196,105,58,0.4)", toastShadow: "0 4px 20px rgba(0,0,0,0.5)",
+  error: "#ff6b6b", errorBg: "#2a1515", errorBorder: "#5c2020",
+  deleteHoverBg: "#2a1515", toggleOff: "#3a3a4a", logoBlend: "screen",
+};
+
+// ── Theme-aware styles ────────────────────────────────────
+function getStyles(T) {
+  return {
+    headerStyle: {
+      background: T.surface, borderBottom: `1px solid ${T.border}`,
+      padding: "12px 32px", display: "flex", alignItems: "center",
+      justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100,
+      boxShadow: T.headerShadow, transition: "background 0.3s, border-color 0.3s, box-shadow 0.3s",
+    },
+    toolbarStyle: { display: "flex", gap: 12 },
+    searchInputStyle: {
+      flex: 1, padding: "10px 16px", border: `1.5px solid ${T.border}`,
+      borderRadius: 8, fontSize: 14, boxSizing: "border-box", background: T.inputBg,
+      fontFamily: "sans-serif", color: T.text, outline: "none",
+      transition: "background 0.3s, border-color 0.3s, color 0.3s",
+    },
+    createButtonStyle: {
+      padding: "10px 22px", background: T.terracotta, color: "#fff", border: "none",
+      borderRadius: 8, fontSize: 14, cursor: "pointer", whiteSpace: "nowrap",
+      fontFamily: "sans-serif", fontWeight: 600, transition: "background 0.2s",
+    },
+    overlayStyle: {
+      position: "fixed", inset: 0, background: T.overlay,
+      backdropFilter: "blur(6px)", WebkitBackdropFilter: "blur(6px)",
+      display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000,
+    },
+    modalStyle: {
+      background: T.surface, borderRadius: 14, width: "90%", maxWidth: 560,
+      maxHeight: "92vh", overflowY: "auto", boxShadow: T.modalShadow,
+      transition: "background 0.3s",
+    },
+    modalHeaderStyle: {
+      display: "flex", justifyContent: "space-between", alignItems: "center",
+      background: T.terracotta, borderRadius: "14px 14px 0 0", padding: "20px 24px",
+    },
+    closeButtonStyle: {
+      background: "rgba(255,255,255,0.2)", border: "none", fontSize: 18,
+      cursor: "pointer", color: "#fff", lineHeight: 1, width: 32, height: 32,
+      borderRadius: "50%", display: "flex", alignItems: "center",
+      justifyContent: "center", flexShrink: 0,
+    },
+    labelStyle: {
+      display: "block", marginBottom: 14, fontWeight: 700, fontSize: 13,
+      color: T.text, fontFamily: "sans-serif", transition: "color 0.3s",
+    },
+    inputStyle: {
+      display: "block", width: "100%", marginTop: 5, padding: "9px 12px",
+      border: `1.5px solid ${T.border}`, borderRadius: 7, fontSize: 14,
+      boxSizing: "border-box", fontFamily: "sans-serif", resize: "vertical",
+      outline: "none", background: T.inputBg, color: T.text,
+      transition: "border-color 0.15s, background 0.3s, color 0.3s",
+    },
+    cancelButtonStyle: {
+      padding: "10px 20px", background: "transparent", color: T.textSecondary,
+      border: `1.5px solid ${T.border}`, borderRadius: 7, fontSize: 14,
+      cursor: "pointer", fontWeight: 500, fontFamily: "sans-serif",
+    },
+    submitButtonStyle: {
+      padding: "10px 24px", background: T.terracotta, color: "#fff", border: "none",
+      borderRadius: 7, fontSize: 14, cursor: "pointer", fontWeight: 700,
+      fontFamily: "sans-serif", boxShadow: T.submitShadow,
+    },
+    gridStyle: {
+      display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 24,
+    },
+    cardStyle: {
+      border: `1px solid ${T.border}`, borderRadius: 12, overflow: "hidden",
+      background: T.surface, boxShadow: T.shadow,
+      transition: "box-shadow 0.25s ease, background 0.3s, border-color 0.3s",
+      display: "flex", flexDirection: "column",
+    },
+    imgStyle: { width: "100%", height: 190, objectFit: "cover", display: "block" },
+    badgeStyle: {
+      position: "absolute", top: 10, right: 10, background: T.terracotta, color: "#fff",
+      fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 20,
+      fontFamily: "sans-serif", letterSpacing: "0.06em",
+    },
+    typeBadgeStyle: {
+      position: "absolute", top: 10, left: 10, color: "#fff", fontSize: 11,
+      fontWeight: 600, padding: "3px 10px", borderRadius: 20,
+      fontFamily: "sans-serif", letterSpacing: "0.05em",
+    },
+    sectionTitleStyle: {
+      fontSize: 11, fontWeight: 700, color: T.textSecondary, textTransform: "uppercase",
+      letterSpacing: "0.1em", marginBottom: 12, marginTop: 20, paddingBottom: 6,
+      borderBottom: `1px solid ${T.border}`, fontFamily: "sans-serif",
+    },
+    requiredMarkStyle: { color: T.error, fontWeight: 700 },
+    errorInputStyle: { borderColor: T.error, background: T.errorBg },
+    errorBannerStyle: {
+      display: "flex", alignItems: "center", background: T.errorBg, color: T.error,
+      border: `1px solid ${T.errorBorder}`, borderRadius: 7, padding: "10px 14px",
+      marginTop: 12, fontSize: 14, fontFamily: "sans-serif",
+    },
+    learnMoreGridStyle: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 12px" },
+    fileInputWrapperStyle: {
+      display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10,
+      marginTop: 5, padding: "8px 12px", border: `1.5px solid ${T.border}`,
+      borderRadius: 7, background: T.inputBg,
+    },
+    fileButtonStyle: {
+      padding: "5px 14px", background: T.sand, color: T.text,
+      border: `1px solid ${T.border}`, borderRadius: 5, fontSize: 13,
+      cursor: "pointer", flexShrink: 0, fontWeight: 600, fontFamily: "sans-serif",
+    },
+    formActionsStyle: {
+      display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 24,
+      paddingTop: 16, borderTop: `1px solid ${T.border}`,
+    },
+    toggleRowStyle: { display: "flex", alignItems: "center", gap: 10, marginTop: 5, height: 38 },
+    toggleStyle: {
+      position: "relative", width: 40, height: 22, border: "none", borderRadius: 11,
+      cursor: "pointer", padding: 0, transition: "background 0.2s", flexShrink: 0,
+    },
+    toggleThumbStyle: {
+      position: "absolute", top: 2, width: 18, height: 18, background: "#fff",
+      borderRadius: "50%", boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
+      transition: "transform 0.2s", display: "block",
+    },
+    themeToggleStyle: {
+      display: "flex", alignItems: "center", justifyContent: "center",
+      width: 36, height: 36, borderRadius: "50%", border: `1.5px solid ${T.border}`,
+      background: T.surfaceHover, cursor: "pointer", color: T.textSecondary,
+      transition: "all 0.25s", flexShrink: 0,
+    },
+  };
+}
+
 function App() {
+  const [darkMode, setDarkMode] = useState(() => {
+    try { return localStorage.getItem("zistoir-dark") === "true"; } catch { return false; }
+  });
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -65,6 +205,23 @@ function App() {
   const [editingActivity, setEditingActivity] = useState(null);
   const [typeFilter, setTypeFilter] = useState("all");
   const [toast, setToast] = useState(null);
+
+  useEffect(() => {
+    localStorage.setItem("zistoir-dark", String(darkMode));
+    document.documentElement.setAttribute("data-theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
+
+  const T = darkMode ? DARK : LIGHT;
+  const {
+    headerStyle, toolbarStyle, searchInputStyle, createButtonStyle,
+    overlayStyle, modalStyle, modalHeaderStyle, closeButtonStyle,
+    labelStyle, inputStyle, cancelButtonStyle, submitButtonStyle,
+    gridStyle, cardStyle, imgStyle, badgeStyle, typeBadgeStyle,
+    sectionTitleStyle, requiredMarkStyle, errorInputStyle, errorBannerStyle,
+    learnMoreGridStyle, fileInputWrapperStyle, fileButtonStyle,
+    formActionsStyle, toggleRowStyle, toggleStyle, toggleThumbStyle,
+    themeToggleStyle,
+  } = getStyles(T);
 
   const fetchActivities = () => {
     fetch(`${BACKEND_URL}/api/activities`)
@@ -114,7 +271,7 @@ function App() {
     formData.append("learn_more_2", learnMore2.trim());
     formData.append("learn_more_3", learnMore3.trim());
     formData.append("learn_more_4", learnMore4.trim());
-    formData.append("image", image);
+    if (image) formData.append("image", image);
 
     const url = editingActivity
       ? `${BACKEND_URL}/api/activities/${editingActivity.id}`
@@ -195,39 +352,63 @@ function App() {
 
   const learnMoreEmpty = !learnMore1.trim() && !learnMore2.trim() && !learnMore3.trim() && !learnMore4.trim();
 
+  // ── SVG Icons ──
+  const MoonIcon = (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  );
+  const SunIcon = (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+      <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    </svg>
+  );
+
   return (
-    <div style={{ minHeight: "100vh", background: C.sandLight, fontFamily: "'Georgia', 'Garamond', serif" }}>
+    <div style={{ minHeight: "100vh", background: T.bg, fontFamily: "'Georgia', 'Garamond', serif", transition: "background 0.3s" }}>
 
       {/* ── Header ── */}
       <header style={headerStyle}>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <img src="/logo2.png" alt="Zistoir" style={{ height: 56, mixBlendMode: "multiply" }}
+          <img src="/logo2.png" alt="Zistoir" style={{ height: 56, mixBlendMode: T.logoBlend, transition: "filter 0.3s" }}
             onError={(e) => { e.target.style.display = "none"; }} />
-          <div style={{ width: 1, height: 36, background: C.sandBorder }} />
-          <span style={{ fontSize: 13, color: C.muted, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: "sans-serif" }}>
+          <div style={{ width: 1, height: 36, background: T.border, transition: "background 0.3s" }} />
+          <span style={{ fontSize: 13, color: T.textSecondary, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: "sans-serif", transition: "color 0.3s" }}>
             Administration
           </span>
         </div>
+        <button
+          onClick={() => setDarkMode((d) => !d)}
+          style={themeToggleStyle}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = T.terracotta; e.currentTarget.style.color = T.terracotta; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.color = T.textSecondary; }}
+          title={darkMode ? "Mode clair" : "Mode sombre"}
+          aria-label="Basculer le thème">
+          {darkMode ? SunIcon : MoonIcon}
+        </button>
       </header>
 
       <div style={{ maxWidth: 1040, margin: "0 auto", padding: "40px 24px" }}>
 
         {/* ── Page title + toolbar ── */}
         <div style={{ marginBottom: 32 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 700, color: C.text, margin: "0 0 4px" }}>
+          <h1 style={{ fontSize: 28, fontWeight: 700, color: T.text, margin: "0 0 4px", transition: "color 0.3s" }}>
             Activités & Histoires
           </h1>
-          <p style={{ fontSize: 14, color: C.muted, margin: "0 0 16px", fontFamily: "sans-serif" }}>
+          <p style={{ fontSize: 14, color: T.textSecondary, margin: "0 0 16px", fontFamily: "sans-serif", transition: "color 0.3s" }}>
             {activities.length} activité{activities.length !== 1 ? "s" : ""} enregistrée{activities.length !== 1 ? "s" : ""}
           </p>
           <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
             {[{ val: "all", label: "Toutes" }, ...ACTIVITY_TYPES].map(({ val, value, label }) => {
               const v = val ?? value;
               const active = typeFilter === v;
-              const color = active ? (ACTIVITY_TYPES.find(t => t.value === v)?.color || C.terracotta) : C.sandBorder;
+              const pillColor = active ? (ACTIVITY_TYPES.find(t => t.value === v)?.color || T.terracotta) : T.border;
               return (
                 <button key={v} onClick={() => setTypeFilter(v)}
-                  style={{ padding: "5px 14px", borderRadius: 20, border: `1.5px solid ${active ? color : C.sandBorder}`, background: active ? color : C.white, color: active ? C.white : C.muted, fontSize: 12, cursor: "pointer", fontFamily: "sans-serif", fontWeight: active ? 700 : 400, transition: "all 0.15s", whiteSpace: "nowrap" }}>
+                  style={{ padding: "5px 14px", borderRadius: 20, border: `1.5px solid ${active ? pillColor : T.border}`, background: active ? pillColor : T.surface, color: active ? "#fff" : T.textSecondary, fontSize: 12, cursor: "pointer", fontFamily: "sans-serif", fontWeight: active ? 700 : 400, transition: "all 0.2s", whiteSpace: "nowrap" }}>
                   {label}
                 </button>
               );
@@ -242,8 +423,8 @@ function App() {
               style={searchInputStyle}
             />
             <button onClick={() => { resetForm(); setShowModal(true); }} style={createButtonStyle}
-              onMouseEnter={(e) => e.target.style.background = C.terracottaLight}
-              onMouseLeave={(e) => e.target.style.background = C.terracotta}>
+              onMouseEnter={(e) => e.target.style.background = T.terracottaLight}
+              onMouseLeave={(e) => e.target.style.background = T.terracotta}>
               + Nouvelle activité
             </button>
           </div>
@@ -255,7 +436,7 @@ function App() {
             <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
               <div style={modalHeaderStyle}>
                 <div>
-                  <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: C.white }}>{editingActivity ? "Modifier l'activité" : "Nouvelle activité"}</h2>
+                  <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#fff" }}>{editingActivity ? "Modifier l'activité" : "Nouvelle activité"}</h2>
                   <p style={{ margin: "3px 0 0", fontSize: 12, color: "rgba(255,255,255,0.65)", fontFamily: "sans-serif" }}>
                     Les champs marqués <span style={{ color: "#fca5a5" }}>*</span> sont obligatoires
                   </p>
@@ -286,7 +467,7 @@ function App() {
 
                   <label style={labelStyle}>
                     Slug <span style={requiredMarkStyle}>*</span>
-                    <span style={{ fontWeight: 400, fontSize: 11, color: "#9ca3af", marginLeft: 4 }}>(auto-généré depuis le titre)</span>
+                    <span style={{ fontWeight: 400, fontSize: 11, color: T.textSecondary, marginLeft: 4 }}>(auto-généré depuis le titre)</span>
                     <input
                       type="text"
                       value={slug}
@@ -310,7 +491,7 @@ function App() {
 
                   <label style={labelStyle}>
                     Lien <span style={requiredMarkStyle}>*</span>
-                    <span style={{ fontWeight: 400, fontSize: 11, color: C.muted, marginLeft: 4, fontFamily: "sans-serif" }}>(utilisé pour le QR code)</span>
+                    <span style={{ fontWeight: 400, fontSize: 11, color: T.textSecondary, marginLeft: 4, fontFamily: "sans-serif" }}>(utilisé pour le QR code)</span>
                     <input type="url" value={link} onChange={(e) => setLink(e.target.value)}
                       placeholder="https://…"
                       style={{ ...inputStyle, ...(formError && !link.trim() ? errorInputStyle : {}) }} />
@@ -342,11 +523,11 @@ function App() {
                     <label style={{ ...labelStyle, marginBottom: 0, flex: 1 }}>
                       Partenaire
                       <div style={toggleRowStyle}>
-                        <span style={{ color: partner ? C.text : C.muted, fontSize: 13, fontFamily: "sans-serif" }}>
+                        <span style={{ color: partner ? T.text : T.textSecondary, fontSize: 13, fontFamily: "sans-serif" }}>
                           {partner ? "Oui" : "Non"}
                         </span>
                         <button type="button" onClick={() => setPartner((p) => !p)}
-                          style={{ ...toggleStyle, background: partner ? C.terracotta : "#d1d5db" }}
+                          style={{ ...toggleStyle, background: partner ? T.terracotta : T.toggleOff }}
                           aria-label="Toggle partenaire">
                           <span style={{ ...toggleThumbStyle, transform: partner ? "translateX(18px)" : "translateX(2px)" }} />
                         </button>
@@ -356,13 +537,13 @@ function App() {
                     <label style={{ ...labelStyle, marginBottom: 0, flex: 1 }}>
                       Actualité récente
                       <div style={toggleRowStyle}>
-                        <span style={{ color: isCurrentEvent ? "#374151" : "#9ca3af", fontSize: 13 }}>
+                        <span style={{ color: isCurrentEvent ? T.text : T.textSecondary, fontSize: 13, fontFamily: "sans-serif" }}>
                           {isCurrentEvent ? "Oui" : "Non"}
                         </span>
                         <button
                           type="button"
                           onClick={() => setIsCurrentEvent((v) => !v)}
-                          style={{ ...toggleStyle, background: isCurrentEvent ? "#0070f3" : "#d1d5db" }}
+                          style={{ ...toggleStyle, background: isCurrentEvent ? "#0070f3" : T.toggleOff }}
                           aria-label="Toggle actualité"
                         >
                           <span style={{ ...toggleThumbStyle, transform: isCurrentEvent ? "translateX(18px)" : "translateX(2px)" }} />
@@ -406,7 +587,7 @@ function App() {
 
                   <div style={sectionTitleStyle}>
                     En savoir plus <span style={requiredMarkStyle}>*</span>
-                    <span style={{ fontWeight: 400, fontSize: 11, color: C.muted, marginLeft: 4, fontFamily: "sans-serif" }}>(au moins 1 requis)</span>
+                    <span style={{ fontWeight: 400, fontSize: 11, color: T.textSecondary, marginLeft: 4, fontFamily: "sans-serif" }}>(au moins 1 requis)</span>
                   </div>
                   <div style={learnMoreGridStyle}>
                     {[learnMore1, learnMore2, learnMore3, learnMore4].map((val, i) => {
@@ -426,9 +607,9 @@ function App() {
 
                   <label style={labelStyle}>
                     Image de couverture {!editingActivity && <span style={requiredMarkStyle}>*</span>}
-                    {editingActivity && <span style={{ fontWeight: 400, fontSize: 11, color: C.muted, marginLeft: 4, fontFamily: "sans-serif" }}>(laisser vide pour conserver l'image actuelle)</span>}
+                    {editingActivity && <span style={{ fontWeight: 400, fontSize: 11, color: T.textSecondary, marginLeft: 4, fontFamily: "sans-serif" }}>(laisser vide pour conserver l'image actuelle)</span>}
                     <div style={{ ...fileInputWrapperStyle, ...(formError && !image && !editingActivity ? errorInputStyle : {}) }}>
-                      <span style={{ color: image ? C.text : C.muted, fontSize: 13, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "sans-serif" }}>
+                      <span style={{ color: image ? T.text : T.textSecondary, fontSize: 13, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "sans-serif" }}>
                         {image ? image.name : (editingActivity ? "Image actuelle conservée" : "Aucun fichier sélectionné (PNG uniquement)")}
                       </span>
                       <label style={fileButtonStyle}>
@@ -455,7 +636,7 @@ function App() {
 
         {/* ── États ── */}
         {loading && (
-          <p style={{ color: C.muted, fontFamily: "sans-serif", textAlign: "center", padding: 48 }}>
+          <p style={{ color: T.textSecondary, fontFamily: "sans-serif", textAlign: "center", padding: 48 }}>
             Chargement des activités…
           </p>
         )}
@@ -463,12 +644,12 @@ function App() {
           <div style={{ ...errorBannerStyle, marginBottom: 24 }}>⚠ {error}</div>
         )}
         {!loading && filtered.length === 0 && (
-          <div style={{ textAlign: "center", padding: "64px 24px", color: C.muted, fontFamily: "sans-serif" }}>
+          <div style={{ textAlign: "center", padding: "64px 24px", color: T.textSecondary, fontFamily: "sans-serif" }}>
             <p style={{ fontSize: 16, margin: "0 0 8px", fontWeight: 600 }}>
               {search || typeFilter !== "all" ? "Aucun résultat" : "Aucune activité pour l'instant"}
             </p>
             <p style={{ fontSize: 13, margin: 0 }}>
-              {search || typeFilter !== "all" ? "Essayez d’autres filtres." : "Créez votre première activité avec le bouton ci-dessus."}
+              {search || typeFilter !== "all" ? "Essayez d'autres filtres." : "Créez votre première activité avec le bouton ci-dessus."}
             </p>
           </div>
         )}
@@ -477,8 +658,8 @@ function App() {
         <div style={gridStyle}>
           {filtered.map((activity) => (
             <div key={activity.id} style={cardStyle}
-              onMouseEnter={(e) => e.currentTarget.style.boxShadow = "0 8px 32px rgba(160,82,45,0.15)"}
-              onMouseLeave={(e) => e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.06)"}>
+              onMouseEnter={(e) => e.currentTarget.style.boxShadow = T.shadowHover}
+              onMouseLeave={(e) => e.currentTarget.style.boxShadow = T.shadow}>
               <div style={{ position: "relative" }}>
                 <img
                   src={activity.image_path}
@@ -489,43 +670,43 @@ function App() {
                 {activity.partner && (
                   <span style={badgeStyle}>Partenaire</span>
                 )}
-                <span style={{ ...typeBadgeStyle, background: typeMap[activity.type]?.color || C.oceanBlue }}>
+                <span style={{ ...typeBadgeStyle, background: typeMap[activity.type]?.color || "#0A4C7E" }}>
                   {typeMap[activity.type]?.label || activity.type}
                 </span>
               </div>
               <div style={{ padding: "16px 18px 14px", flex: 1 }}>
-                <h2 style={{ margin: "0 0 6px", fontSize: 17, fontWeight: 700, color: C.text }}>{activity.title}</h2>
+                <h2 style={{ margin: "0 0 6px", fontSize: 17, fontWeight: 700, color: T.text }}>{activity.title}</h2>
                 {activity.subtitle && (
-                  <p style={{ margin: "0 0 6px", color: C.muted, fontSize: 12, fontStyle: "italic", fontFamily: "sans-serif" }}>{activity.subtitle}</p>
+                  <p style={{ margin: "0 0 6px", color: T.textSecondary, fontSize: 12, fontStyle: "italic", fontFamily: "sans-serif" }}>{activity.subtitle}</p>
                 )}
                 {activity.description && (
-                  <p style={{ margin: "0 0 12px", color: C.muted, fontSize: 13, lineHeight: 1.5, fontFamily: "sans-serif" }}>
+                  <p style={{ margin: "0 0 12px", color: T.textSecondary, fontSize: 13, lineHeight: 1.5, fontFamily: "sans-serif" }}>
                     {activity.description.length > 100 ? activity.description.slice(0, 100) + "…" : activity.description}
                   </p>
                 )}
                 {activity.link && (
                   <a href={activity.link} target="_blank" rel="noreferrer"
-                    style={{ color: C.terracotta, fontSize: 13, fontFamily: "sans-serif", fontWeight: 600, textDecoration: "none" }}>
+                    style={{ color: T.terracotta, fontSize: 13, fontFamily: "sans-serif", fontWeight: 600, textDecoration: "none" }}>
                     Voir le lien →
                   </a>
                 )}
               </div>
-              <div style={{ display: "flex", borderTop: `1px solid ${C.sandBorder}` }}>
+              <div style={{ display: "flex", borderTop: `1px solid ${T.border}` }}>
                 <button
                   onClick={() => handleEditClick(activity)}
                   title="Modifier"
-                  style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 7, padding: "10px 0", background: "transparent", color: C.muted, border: "none", borderRight: `1px solid ${C.sandBorder}`, fontSize: 12, cursor: "pointer", fontFamily: "sans-serif", fontWeight: 600, transition: "all 0.15s" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = C.sandLight; e.currentTarget.style.color = C.terracotta; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.muted; }}>
+                  style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 7, padding: "10px 0", background: "transparent", color: T.textSecondary, border: "none", borderRight: `1px solid ${T.border}`, fontSize: 12, cursor: "pointer", fontFamily: "sans-serif", fontWeight: 600, transition: "all 0.15s" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = T.surfaceHover; e.currentTarget.style.color = T.terracotta; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = T.textSecondary; }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   Modifier
                 </button>
                 <button
                   onClick={() => handleDelete(activity)}
                   title="Supprimer"
-                  style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 7, padding: "10px 0", background: "transparent", color: C.muted, border: "none", fontSize: 12, cursor: "pointer", fontFamily: "sans-serif", fontWeight: 600, transition: "all 0.15s" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = "#fff5f3"; e.currentTarget.style.color = C.error; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.muted; }}>
+                  style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 7, padding: "10px 0", background: "transparent", color: T.textSecondary, border: "none", fontSize: 12, cursor: "pointer", fontFamily: "sans-serif", fontWeight: 600, transition: "all 0.15s" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = T.deleteHoverBg; e.currentTarget.style.color = T.error; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = T.textSecondary; }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
                   Supprimer
                 </button>
@@ -539,9 +720,9 @@ function App() {
       {toast && (
         <div style={{
           position: "fixed", bottom: 28, right: 28, zIndex: 2000,
-          background: toast.type === "error" ? C.error : C.tropicalGreen,
-          color: C.white, padding: "12px 20px", borderRadius: 10,
-          boxShadow: "0 4px 20px rgba(0,0,0,0.25)", fontSize: 14,
+          background: toast.type === "error" ? T.error : T.tropicalGreen,
+          color: "#fff", padding: "12px 20px", borderRadius: 10,
+          boxShadow: T.toastShadow, fontSize: 14,
           fontFamily: "sans-serif", fontWeight: 600, maxWidth: 340,
           animation: "fadeInUp 0.25s ease",
         }}>
@@ -551,302 +732,5 @@ function App() {
     </div>
   );
 }
-
-// ── Styles ────────────────────────────────────────────────
-
-const headerStyle = {
-  background: C.white,
-  borderBottom: `1px solid ${C.sandBorder}`,
-  padding: "12px 32px",
-  display: "flex",
-  alignItems: "center",
-  position: "sticky",
-  top: 0,
-  zIndex: 100,
-  boxShadow: "0 1px 8px rgba(0,0,0,0.06)",
-};
-
-const toolbarStyle = {
-  display: "flex",
-  gap: 12,
-};
-
-const searchInputStyle = {
-  flex: 1,
-  padding: "10px 16px",
-  border: `1.5px solid ${C.sandBorder}`,
-  borderRadius: 8,
-  fontSize: 14,
-  boxSizing: "border-box",
-  background: C.white,
-  fontFamily: "sans-serif",
-  color: C.text,
-  outline: "none",
-};
-
-const createButtonStyle = {
-  padding: "10px 22px",
-  background: C.terracotta,
-  color: C.white,
-  border: "none",
-  borderRadius: 8,
-  fontSize: 14,
-  cursor: "pointer",
-  whiteSpace: "nowrap",
-  fontFamily: "sans-serif",
-  fontWeight: 600,
-  transition: "background 0.2s",
-};
-
-const overlayStyle = {
-  position: "fixed",
-  inset: 0,
-  background: "rgba(45,36,22,0.5)",
-  backdropFilter: "blur(6px)",
-  WebkitBackdropFilter: "blur(6px)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  zIndex: 1000,
-};
-
-const modalStyle = {
-  background: C.white,
-  borderRadius: 14,
-  width: "90%",
-  maxWidth: 560,
-  maxHeight: "92vh",
-  overflowY: "auto",
-  boxShadow: "0 24px 64px rgba(45,36,22,0.3)",
-};
-
-const modalHeaderStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  background: C.terracotta,
-  borderRadius: "14px 14px 0 0",
-  padding: "20px 24px",
-};
-
-const closeButtonStyle = {
-  background: "rgba(255,255,255,0.2)",
-  border: "none",
-  fontSize: 18,
-  cursor: "pointer",
-  color: C.white,
-  lineHeight: 1,
-  width: 32,
-  height: 32,
-  borderRadius: "50%",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  flexShrink: 0,
-};
-
-const labelStyle = {
-  display: "block",
-  marginBottom: 14,
-  fontWeight: 700,
-  fontSize: 13,
-  color: C.text,
-  fontFamily: "sans-serif",
-};
-
-const inputStyle = {
-  display: "block",
-  width: "100%",
-  marginTop: 5,
-  padding: "9px 12px",
-  border: `1.5px solid ${C.sandBorder}`,
-  borderRadius: 7,
-  fontSize: 14,
-  boxSizing: "border-box",
-  fontFamily: "sans-serif",
-  resize: "vertical",
-  outline: "none",
-  background: C.sandLight,
-  color: C.text,
-  transition: "border-color 0.15s",
-};
-
-const cancelButtonStyle = {
-  padding: "10px 20px",
-  background: "transparent",
-  color: C.muted,
-  border: `1.5px solid ${C.sandBorder}`,
-  borderRadius: 7,
-  fontSize: 14,
-  cursor: "pointer",
-  fontWeight: 500,
-  fontFamily: "sans-serif",
-};
-
-const submitButtonStyle = {
-  padding: "10px 24px",
-  background: C.terracotta,
-  color: C.white,
-  border: "none",
-  borderRadius: 7,
-  fontSize: 14,
-  cursor: "pointer",
-  fontWeight: 700,
-  fontFamily: "sans-serif",
-  boxShadow: "0 2px 8px rgba(160,82,45,0.35)",
-};
-
-const gridStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-  gap: 24,
-};
-
-const cardStyle = {
-  border: `1px solid ${C.sandBorder}`,
-  borderRadius: 12,
-  overflow: "hidden",
-  background: C.white,
-  boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
-  transition: "box-shadow 0.25s ease",
-  display: "flex",
-  flexDirection: "column",
-};
-
-const imgStyle = {
-  width: "100%",
-  height: 190,
-  objectFit: "cover",
-  display: "block",
-};
-
-const badgeStyle = {
-  position: "absolute",
-  top: 10,
-  right: 10,
-  background: C.terracotta,
-  color: C.white,
-  fontSize: 11,
-  fontWeight: 700,
-  padding: "3px 10px",
-  borderRadius: 20,
-  fontFamily: "sans-serif",
-  letterSpacing: "0.06em",
-};
-
-const typeBadgeStyle = {
-  position: "absolute",
-  top: 10,
-  left: 10,
-  color: C.white,
-  fontSize: 11,
-  fontWeight: 600,
-  padding: "3px 10px",
-  borderRadius: 20,
-  fontFamily: "sans-serif",
-  letterSpacing: "0.05em",
-};
-
-const sectionTitleStyle = {
-  fontSize: 11,
-  fontWeight: 700,
-  color: C.muted,
-  textTransform: "uppercase",
-  letterSpacing: "0.1em",
-  marginBottom: 12,
-  marginTop: 20,
-  paddingBottom: 6,
-  borderBottom: `1px solid ${C.sandBorder}`,
-  fontFamily: "sans-serif",
-};
-
-const requiredMarkStyle = { color: C.error, fontWeight: 700 };
-
-const errorInputStyle = { borderColor: C.error, background: C.errorBg };
-
-const errorBannerStyle = {
-  display: "flex",
-  alignItems: "center",
-  background: C.errorBg,
-  color: C.error,
-  border: `1px solid #f5c6c1`,
-  borderRadius: 7,
-  padding: "10px 14px",
-  marginTop: 12,
-  fontSize: 14,
-  fontFamily: "sans-serif",
-};
-
-const learnMoreGridStyle = {
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  gap: "0 12px",
-};
-
-const fileInputWrapperStyle = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: 10,
-  marginTop: 5,
-  padding: "8px 12px",
-  border: `1.5px solid ${C.sandBorder}`,
-  borderRadius: 7,
-  background: C.sandLight,
-};
-
-const fileButtonStyle = {
-  padding: "5px 14px",
-  background: C.sand,
-  color: C.text,
-  border: `1px solid ${C.sandBorder}`,
-  borderRadius: 5,
-  fontSize: 13,
-  cursor: "pointer",
-  flexShrink: 0,
-  fontWeight: 600,
-  fontFamily: "sans-serif",
-};
-
-const formActionsStyle = {
-  display: "flex",
-  justifyContent: "flex-end",
-  gap: 12,
-  marginTop: 24,
-  paddingTop: 16,
-  borderTop: `1px solid ${C.sandBorder}`,
-};
-
-const toggleRowStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: 10,
-  marginTop: 5,
-  height: 38,
-};
-
-const toggleStyle = {
-  position: "relative",
-  width: 40,
-  height: 22,
-  border: "none",
-  borderRadius: 11,
-  cursor: "pointer",
-  padding: 0,
-  transition: "background 0.2s",
-  flexShrink: 0,
-};
-
-const toggleThumbStyle = {
-  position: "absolute",
-  top: 2,
-  width: 18,
-  height: 18,
-  background: C.white,
-  borderRadius: "50%",
-  boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
-  transition: "transform 0.2s",
-  display: "block",
-};
 
 export default App;
