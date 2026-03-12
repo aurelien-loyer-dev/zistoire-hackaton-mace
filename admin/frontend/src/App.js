@@ -10,11 +10,16 @@ function App() {
   const [showModal, setShowModal] = useState(false);
 
   const [title, setTitle] = useState("");
+  const [slug, setSlug] = useState("");
+  const [subtitle, setSubtitle] = useState("");
+  const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [link, setLink] = useState("");
   const [intro, setIntro] = useState("");
   const [history, setHistory] = useState("");
   const [partner, setPartner] = useState(false);
+  const [partnerName, setPartnerName] = useState("");
+  const [isCurrentEvent, setIsCurrentEvent] = useState(false);
   const [activityType, setActivityType] = useState("cultural");
   const [learnMore1, setLearnMore1] = useState("");
   const [learnMore2, setLearnMore2] = useState("");
@@ -66,11 +71,16 @@ function App() {
     setSubmitting(true);
     const formData = new FormData();
     formData.append("title", title.trim());
+    formData.append("slug", slug.trim());
+    formData.append("subtitle", subtitle.trim());
+    formData.append("category", category.trim());
     formData.append("description", description.trim());
     formData.append("link", link.trim());
     formData.append("intro", intro.trim());
     formData.append("history", history.trim());
     formData.append("partner", String(partner));
+    formData.append("partner_name", partnerName.trim());
+    formData.append("is_current_event", String(isCurrentEvent));
     formData.append("type", activityType);
     formData.append("learn_more_1", learnMore1.trim());
     formData.append("learn_more_2", learnMore2.trim());
@@ -88,11 +98,16 @@ function App() {
       })
       .then(() => {
         setTitle("");
+        setSlug("");
+        setSubtitle("");
+        setCategory("");
         setDescription("");
         setLink("");
         setIntro("");
         setHistory("");
         setPartner(false);
+        setPartnerName("");
+        setIsCurrentEvent(false);
         setActivityType("cultural");
         setLearnMore1("");
         setLearnMore2("");
@@ -183,9 +198,35 @@ function App() {
                     <input
                       type="text"
                       value={title}
-                      onChange={(e) => setTitle(e.target.value)}
+                      onChange={(e) => {
+                        setTitle(e.target.value);
+                        if (!slug) setSlug(e.target.value.toLowerCase().normalize("NFKD").replace(/[^\w\s-]/g, "").replace(/[-\s]+/g, "-").replace(/^-+|-+$/g, ""));
+                      }}
                       placeholder="Nom de l'activité"
                       style={{ ...inputStyle, ...(formError && !title.trim() ? errorInputStyle : {}) }}
+                    />
+                  </label>
+
+                  <label style={labelStyle}>
+                    Slug <span style={requiredMarkStyle}>*</span>
+                    <span style={{ fontWeight: 400, fontSize: 11, color: "#9ca3af", marginLeft: 4 }}>(identifiant URL, auto-généré)</span>
+                    <input
+                      type="text"
+                      value={slug}
+                      onChange={(e) => setSlug(e.target.value)}
+                      placeholder="mon-activite"
+                      style={inputStyle}
+                    />
+                  </label>
+
+                  <label style={labelStyle}>
+                    Sous-titre
+                    <input
+                      type="text"
+                      value={subtitle}
+                      onChange={(e) => setSubtitle(e.target.value)}
+                      placeholder="Court sous-titre affiché sur la carte..."
+                      style={inputStyle}
                     />
                   </label>
 
@@ -215,6 +256,19 @@ function App() {
                     </label>
 
                     <label style={{ ...labelStyle, flex: 1 }}>
+                      Catégorie
+                      <input
+                        type="text"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        placeholder="Personnalités, Nature..."
+                        style={inputStyle}
+                      />
+                    </label>
+                  </div>
+
+                  <div style={{ display: "flex", gap: 24, marginBottom: 14 }}>
+                    <label style={{ ...labelStyle, marginBottom: 0, flex: 1 }}>
                       Partenaire
                       <div style={toggleRowStyle}>
                         <span style={{ color: partner ? "#374151" : "#9ca3af", fontSize: 13 }}>
@@ -230,7 +284,37 @@ function App() {
                         </button>
                       </div>
                     </label>
+
+                    <label style={{ ...labelStyle, marginBottom: 0, flex: 1 }}>
+                      Actualité récente
+                      <div style={toggleRowStyle}>
+                        <span style={{ color: isCurrentEvent ? "#374151" : "#9ca3af", fontSize: 13 }}>
+                          {isCurrentEvent ? "Oui" : "Non"}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setIsCurrentEvent((v) => !v)}
+                          style={{ ...toggleStyle, background: isCurrentEvent ? "#0070f3" : "#d1d5db" }}
+                          aria-label="Toggle actualité"
+                        >
+                          <span style={{ ...toggleThumbStyle, transform: isCurrentEvent ? "translateX(18px)" : "translateX(2px)" }} />
+                        </button>
+                      </div>
+                    </label>
                   </div>
+
+                  {partner && (
+                    <label style={labelStyle}>
+                      Nom du partenaire
+                      <input
+                        type="text"
+                        value={partnerName}
+                        onChange={(e) => setPartnerName(e.target.value)}
+                        placeholder="Ex : Cité du Volcan"
+                        style={inputStyle}
+                      />
+                    </label>
+                  )}
 
                   <label style={labelStyle}>
                     Description

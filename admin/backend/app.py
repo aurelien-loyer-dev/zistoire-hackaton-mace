@@ -1,4 +1,6 @@
 import os
+import re
+import unicodedata
 import requests
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -13,6 +15,7 @@ UPLOAD_DIR = os.environ.get("UPLOAD_DIR", "/data/uploads")
 QRCODE_DIR = os.environ.get("QRCODE_DIR", "/data/qrcodes")
 QRCODE_SERVICE_URL = os.environ.get("QRCODE_SERVICE_URL", "http://qrcode-service:5000")
 DATABASE_URL = os.environ.get("DATABASE_URL")
+ADMIN_BACKEND_URL = os.environ.get("ADMIN_BACKEND_URL", "http://localhost:3001")
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(QRCODE_DIR, exist_ok=True)
@@ -22,6 +25,13 @@ def get_db():
     conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     conn.autocommit = True
     return conn
+
+
+def slugify(text):
+    text = text.lower().strip()
+    text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("ascii")
+    text = re.sub(r"[^\w\s-]", "", text)
+    return re.sub(r"[-\s]+", "-", text).strip("-")
 
 
 @app.route("/health", methods=["GET"])
@@ -35,8 +45,9 @@ def list_activities():
     cur = conn.cursor()
     cur.execute("""
         SELECT
-            a.id, a.title, a.description, a.link, a.intro, a.history,
-            a.partner, a.type, a.created_at,
+            a.id, a.slug, a.title, a.subtitle, a.image_path, a.category,
+            a.description, a.link, a.intro, a.history,
+            a.partner, a.partner_name, a.is_current_event, a.type, a.created_at,
             COALESCE(
                 json_agg(
                     json_build_object('id', lm.id, 'content', lm.content, 'position', lm.position)
@@ -71,6 +82,11 @@ def create_activity():
     history = request.form.get("history", "")
     partner = request.form.get("partner", "false").lower() == "true"
     activity_type = request.form.get("type", "cultural")
+    slug = request.form.get("slug", "").strip() or (slugify(title) if title else "")
+    subtitle = request.form.get("subtitle", "")
+    category = request.form.get("category", "")
+    is_current_event = request.form.get("is_current_event", "false").lower() == "true"
+    partner_name = request.form.get("partner_name", "")
     learn_more_texts = [
         request.form.get("learn_more_1", ""),
         request.form.get("learn_more_2", ""),
@@ -93,15 +109,19 @@ def create_activity():
     # Save the cover image as {title}.png
     filename = secure_filename(title) + ".png"
     image.save(os.path.join(UPLOAD_DIR, filename))
+    image_path = f"{ADMIN_BACKEND_URL}/uploads/{filename}"
 
     # Save to database (single transaction)
     conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
     try:
         cur = conn.cursor()
         cur.execute(
-            "INSERT INTO activities (title, description, link, intro, history, partner, type) "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id, created_at",
-            (title, description, link, intro, history, partner, activity_type),
+            "INSERT INTO activities "
+            "(slug, title, subtitle, image_path, category, description, link, intro, history, "
+            " partner, partner_name, is_current_event, type) "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id, created_at",
+            (slug, title, subtitle, image_path, category, description, link, intro, history,
+             partner, partner_name, is_current_event, activity_type),
         )
         result = cur.fetchone()
         activity_id = result["id"]
@@ -137,12 +157,18 @@ def create_activity():
 
     return jsonify({
         "id": activity_id,
+        "slug": slug,
         "title": title,
+        "subtitle": subtitle,
+        "image_path": image_path,
+        "category": category,
         "description": description,
         "link": link,
         "intro": intro,
         "history": history,
         "partner": partner,
+        "partner_name": partner_name,
+        "is_current_event": is_current_event,
         "type": activity_type,
         "learn_more": inserted_learn_more,
         "created_at": result["created_at"].isoformat() if result["created_at"] else None,

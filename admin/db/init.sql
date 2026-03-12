@@ -7,12 +7,18 @@ END $$;
 
 CREATE TABLE IF NOT EXISTS activities (
     id SERIAL PRIMARY KEY,
+    slug VARCHAR(255) UNIQUE NOT NULL,
     title VARCHAR(255) NOT NULL,
+    subtitle TEXT,
+    image_path VARCHAR(2048),
+    category VARCHAR(255),
     link VARCHAR(2048),
     description TEXT,
     intro TEXT,
     history TEXT,
     partner BOOLEAN NOT NULL DEFAULT FALSE,
+    partner_name VARCHAR(255),
+    is_current_event BOOLEAN NOT NULL DEFAULT FALSE,
     type activity_type NOT NULL DEFAULT 'cultural',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

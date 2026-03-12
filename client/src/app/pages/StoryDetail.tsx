@@ -6,17 +6,29 @@ import { BackButton } from "../components/BackButton";
 import { PartnerCTAButton } from "../components/PartnerCTAButton";
 import { StorySlider } from "../components/StorySlider";
 import { Footer } from "../components/Footer";
-import { getStoryBySlug } from "../data/stories";
+import { useStory } from "../../hooks/useStories";
 
 export function StoryDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const story = slug ? getStoryBySlug(slug) : undefined;
+  const { story, loading, error } = useStory(slug);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [slug]);
 
-  if (!story) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-16 text-center">
+          <p className="text-lg" style={{ color: "var(--muted-foreground)" }}>Chargement...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !story) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -84,18 +96,20 @@ export function StoryDetail() {
       )}
 
       {/* Story Slider Section */}
-      <section className="container mx-auto px-4 mb-16">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          <h2 className="text-4xl mb-8 text-center" style={{ fontWeight: "600" }}>
-            En savoir plus
-          </h2>
-          <StorySlider slides={story.storySlides} />
-        </motion.div>
-      </section>
+      {story.storySlides.length > 0 && (
+        <section className="container mx-auto px-4 mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <h2 className="text-4xl mb-8 text-center" style={{ fontWeight: "600" }}>
+              En savoir plus
+            </h2>
+            <StorySlider slides={story.storySlides} />
+          </motion.div>
+        </section>
+      )}
 
       {/* Full Text Section */}
       <section className="container mx-auto px-4 mb-16">
