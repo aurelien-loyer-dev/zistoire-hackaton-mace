@@ -33,7 +33,22 @@ def health():
 def list_activities():
     conn = get_db()
     cur = conn.cursor()
-    cur.execute("SELECT id, title, description, link, intro, history, learn_more_1, learn_more_2, learn_more_3, learn_more_4, created_at FROM activities ORDER BY created_at DESC")
+    cur.execute("""
+        SELECT
+            a.id, a.title, a.description, a.link, a.intro, a.history,
+            a.partner, a.type, a.created_at,
+            COALESCE(
+                json_agg(
+                    json_build_object('id', lm.id, 'content', lm.content, 'position', lm.position)
+                    ORDER BY lm.position
+                ) FILTER (WHERE lm.id IS NOT NULL),
+                '[]'::json
+            ) AS learn_more
+        FROM activities a
+        LEFT JOIN learn_more lm ON lm.activity_id = a.id
+        GROUP BY a.id
+        ORDER BY a.created_at DESC
+    """)
     rows = cur.fetchall()
     cur.close()
     conn.close()
@@ -54,10 +69,14 @@ def create_activity():
     link = request.form.get("link", "")
     intro = request.form.get("intro", "")
     history = request.form.get("history", "")
-    learn_more_1 = request.form.get("learn_more_1", "")
-    learn_more_2 = request.form.get("learn_more_2", "")
-    learn_more_3 = request.form.get("learn_more_3", "")
-    learn_more_4 = request.form.get("learn_more_4", "")
+    partner = request.form.get("partner", "false").lower() == "true"
+    activity_type = request.form.get("type", "cultural")
+    learn_more_texts = [
+        request.form.get("learn_more_1", ""),
+        request.form.get("learn_more_2", ""),
+        request.form.get("learn_more_3", ""),
+        request.form.get("learn_more_4", ""),
+    ]
     image = request.files.get("image")
 
     if not title:
@@ -66,21 +85,44 @@ def create_activity():
         return jsonify({"error": "Link is required"}), 400
     if not image:
         return jsonify({"error": "Image is required"}), 400
+    if activity_type not in ("cultural", "favorite"):
+        return jsonify({"error": "Type must be 'cultural' or 'favorite'"}), 400
+    if not any(t.strip() for t in learn_more_texts):
+        return jsonify({"error": "At least one learn_more entry is required"}), 400
 
     # Save the cover image as {title}.png
     filename = secure_filename(title) + ".png"
     image.save(os.path.join(UPLOAD_DIR, filename))
 
-    # Save to database
-    conn = get_db()
-    cur = conn.cursor()
-    cur.execute(
-        "INSERT INTO activities (title, description, link, intro, history, learn_more_1, learn_more_2, learn_more_3, learn_more_4) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id, created_at",
-        (title, description, link, intro, history, learn_more_1, learn_more_2, learn_more_3, learn_more_4),
-    )
-    result = cur.fetchone()
-    cur.close()
-    conn.close()
+    # Save to database (single transaction)
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    try:
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO activities (title, description, link, intro, history, partner, type) "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id, created_at",
+            (title, description, link, intro, history, partner, activity_type),
+        )
+        result = cur.fetchone()
+        activity_id = result["id"]
+
+        inserted_learn_more = []
+        for pos, text in enumerate(learn_more_texts, start=1):
+            if text.strip():
+                cur.execute(
+                    "INSERT INTO learn_more (activity_id, content, position) VALUES (%s, %s, %s) RETURNING id",
+                    (activity_id, text.strip(), pos),
+                )
+                lm_id = cur.fetchone()["id"]
+                inserted_learn_more.append({"id": lm_id, "content": text.strip(), "position": pos})
+
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cur.close()
+        conn.close()
 
     # Generate QR code via the microservice (content = link so scanning redirects to it)
     try:
@@ -94,16 +136,15 @@ def create_activity():
         return jsonify({"error": f"QR code generation failed: {e}"}), 502
 
     return jsonify({
-        "id": result["id"],
+        "id": activity_id,
         "title": title,
         "description": description,
         "link": link,
         "intro": intro,
         "history": history,
-        "learn_more_1": learn_more_1,
-        "learn_more_2": learn_more_2,
-        "learn_more_3": learn_more_3,
-        "learn_more_4": learn_more_4,
+        "partner": partner,
+        "type": activity_type,
+        "learn_more": inserted_learn_more,
         "created_at": result["created_at"].isoformat() if result["created_at"] else None,
     }), 201
 
