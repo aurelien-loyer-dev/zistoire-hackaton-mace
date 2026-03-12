@@ -2,6 +2,23 @@ import { useState, useEffect } from "react";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:3001";
 
+// ── Activity types ────────────────────────────────────────
+const ACTIVITY_TYPES = [
+  { value: "cultural",   label: "Culturel",      color: "#0A4C7E" },
+  { value: "favorite",   label: "Favori",         color: "#2D8659" },
+  { value: "history",    label: "Histoire",       color: "#6A1B9A" },
+  { value: "nature",     label: "Nature",         color: "#2D7A4F" },
+  { value: "gastronomy", label: "Gastronomie",    color: "#B5651D" },
+  { value: "craft",      label: "Artisanat",      color: "#795548" },
+  { value: "sport",      label: "Sport",          color: "#1565C0" },
+  { value: "event",      label: "Événement",      color: "#C62828" },
+  { value: "wellness",   label: "Bien-être",      color: "#00838F" },
+  { value: "family",     label: "Famille",        color: "#E65100" },
+  { value: "nocturnal",  label: "Nocturne",       color: "#37474F" },
+  { value: "tech",       label: "Technologique",  color: "#283593" },
+];
+const typeMap = Object.fromEntries(ACTIVITY_TYPES.map((t) => [t.value, t]));
+
 // ── Design tokens (aligned with public site) ──────────────
 const C = {
   terracotta: "#A0522D",
@@ -37,6 +54,7 @@ function App() {
   const [partnerName, setPartnerName] = useState("");
   const [isCurrentEvent, setIsCurrentEvent] = useState(false);
   const [activityType, setActivityType] = useState("cultural");
+  const [slugLocked, setSlugLocked] = useState(false);
   const [learnMore1, setLearnMore1] = useState("");
   const [learnMore2, setLearnMore2] = useState("");
   const [learnMore3, setLearnMore3] = useState("");
@@ -128,7 +146,7 @@ function App() {
     setPartner(false); setPartnerName(""); setIsCurrentEvent(false);
     setActivityType("cultural");
     setLearnMore1(""); setLearnMore2(""); setLearnMore3(""); setLearnMore4("");
-    setImage(null); setFormError(null); setEditingActivity(null);
+    setImage(null); setFormError(null); setEditingActivity(null); setSlugLocked(false);
   };
 
   const closeModal = () => { setShowModal(false); resetForm(); };
@@ -202,13 +220,18 @@ function App() {
           <p style={{ fontSize: 14, color: C.muted, margin: "0 0 16px", fontFamily: "sans-serif" }}>
             {activities.length} activité{activities.length !== 1 ? "s" : ""} enregistrée{activities.length !== 1 ? "s" : ""}
           </p>
-          <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-            {[{val: "all", label: "Toutes"}, {val: "cultural", label: "Culturel"}, {val: "favorite", label: "Favori"}].map(({val, label}) => (
-              <button key={val} onClick={() => setTypeFilter(val)}
-                style={{ padding: "6px 16px", borderRadius: 20, border: `1.5px solid ${typeFilter === val ? C.terracotta : C.sandBorder}`, background: typeFilter === val ? C.terracotta : C.white, color: typeFilter === val ? C.white : C.muted, fontSize: 13, cursor: "pointer", fontFamily: "sans-serif", fontWeight: typeFilter === val ? 700 : 400, transition: "all 0.15s" }}>
-                {label}
-              </button>
-            ))}
+          <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+            {[{ val: "all", label: "Toutes" }, ...ACTIVITY_TYPES].map(({ val, value, label }) => {
+              const v = val ?? value;
+              const active = typeFilter === v;
+              const color = active ? (ACTIVITY_TYPES.find(t => t.value === v)?.color || C.terracotta) : C.sandBorder;
+              return (
+                <button key={v} onClick={() => setTypeFilter(v)}
+                  style={{ padding: "5px 14px", borderRadius: 20, border: `1.5px solid ${active ? color : C.sandBorder}`, background: active ? color : C.white, color: active ? C.white : C.muted, fontSize: 12, cursor: "pointer", fontFamily: "sans-serif", fontWeight: active ? 700 : 400, transition: "all 0.15s", whiteSpace: "nowrap" }}>
+                  {label}
+                </button>
+              );
+            })}
           </div>
           <div style={toolbarStyle}>
             <input
@@ -252,18 +275,23 @@ function App() {
 
                   <label style={labelStyle}>
                     Titre <span style={requiredMarkStyle}>*</span>
-                    <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
+                    <input type="text" value={title} onChange={(e) => {
+                      const v = e.target.value;
+                      setTitle(v);
+                      if (!slugLocked) setSlug(v.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s-]/g, "").trim().replace(/[\s-]+/g, "-"));
+                    }}
                       placeholder="Nom de l'activité"
                       style={{ ...inputStyle, ...(formError && !title.trim() ? errorInputStyle : {}) }} />
                   </label>
 
                   <label style={labelStyle}>
                     Slug <span style={requiredMarkStyle}>*</span>
-                    <span style={{ fontWeight: 400, fontSize: 11, color: "#9ca3af", marginLeft: 4 }}>(identifiant URL, auto-généré)</span>
+                    <span style={{ fontWeight: 400, fontSize: 11, color: "#9ca3af", marginLeft: 4 }}>(auto-généré depuis le titre)</span>
                     <input
                       type="text"
                       value={slug}
-                      onChange={(e) => setSlug(e.target.value)}
+                      onChange={(e) => { setSlug(e.target.value); setSlugLocked(true); }}
+                      onFocus={() => setSlugLocked(true)}
                       placeholder="mon-activite"
                       style={inputStyle}
                     />
@@ -293,8 +321,9 @@ function App() {
                       Type <span style={requiredMarkStyle}>*</span>
                       <select value={activityType} onChange={(e) => setActivityType(e.target.value)}
                         style={{ ...inputStyle, cursor: "pointer" }}>
-                        <option value="cultural">Culturel</option>
-                        <option value="favorite">Favori</option>
+                        {ACTIVITY_TYPES.map((t) => (
+                          <option key={t.value} value={t.value}>{t.label}</option>
+                        ))}
                       </select>
                     </label>
                     <label style={{ ...labelStyle, flex: 1 }}>
@@ -435,7 +464,6 @@ function App() {
         )}
         {!loading && filtered.length === 0 && (
           <div style={{ textAlign: "center", padding: "64px 24px", color: C.muted, fontFamily: "sans-serif" }}>
-            <p style={{ fontSize: 40, margin: "0 0 12px" }}>🌴</p>
             <p style={{ fontSize: 16, margin: "0 0 8px", fontWeight: 600 }}>
               {search || typeFilter !== "all" ? "Aucun résultat" : "Aucune activité pour l'instant"}
             </p>
@@ -461,8 +489,8 @@ function App() {
                 {activity.partner && (
                   <span style={badgeStyle}>Partenaire</span>
                 )}
-                <span style={{ ...typeBadgeStyle, background: activity.type === "favorite" ? C.tropicalGreen : C.oceanBlue }}>
-                  {activity.type === "favorite" ? "Favori" : "Culturel"}
+                <span style={{ ...typeBadgeStyle, background: typeMap[activity.type]?.color || C.oceanBlue }}>
+                  {typeMap[activity.type]?.label || activity.type}
                 </span>
               </div>
               <div style={{ padding: "16px 18px 14px", flex: 1 }}>

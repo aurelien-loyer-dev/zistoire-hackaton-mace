@@ -16,6 +16,7 @@ QRCODE_DIR = os.environ.get("QRCODE_DIR", "/data/qrcodes")
 QRCODE_SERVICE_URL = os.environ.get("QRCODE_SERVICE_URL", "http://qrcode-service:5000")
 DATABASE_URL = os.environ.get("DATABASE_URL")
 ADMIN_BACKEND_URL = os.environ.get("ADMIN_BACKEND_URL", "http://localhost:3001")
+PUBLIC_SITE_URL = os.environ.get("PUBLIC_SITE_URL", "http://localhost:5173")
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(QRCODE_DIR, exist_ok=True)
@@ -101,8 +102,12 @@ def create_activity():
         return jsonify({"error": "Link is required"}), 400
     if not image:
         return jsonify({"error": "Image is required"}), 400
-    if activity_type not in ("cultural", "favorite"):
-        return jsonify({"error": "Type must be 'cultural' or 'favorite'"}), 400
+    VALID_TYPES = (
+        "cultural", "favorite", "history", "nature", "gastronomy",
+        "craft", "sport", "event", "wellness", "family", "nocturnal", "tech",
+    )
+    if activity_type not in VALID_TYPES:
+        return jsonify({"error": f"Invalid type. Must be one of: {', '.join(VALID_TYPES)}"}), 400
     if not any(t.strip() for t in learn_more_texts):
         return jsonify({"error": "At least one learn_more entry is required"}), 400
 
@@ -144,11 +149,12 @@ def create_activity():
         cur.close()
         conn.close()
 
-    # Generate QR code via the microservice (content = link so scanning redirects to it)
+    # Generate QR code pointing to the activity page on the public site
+    activity_page_url = f"{PUBLIC_SITE_URL}/histoires/{slug}"
     try:
         resp = requests.post(
             f"{QRCODE_SERVICE_URL}/generate",
-            json={"content": link, "filename": secure_filename(title)},
+            json={"content": activity_page_url, "filename": secure_filename(title)},
             timeout=5,
         )
         resp.raise_for_status()
@@ -210,8 +216,12 @@ def update_activity(activity_id):
             return jsonify({"error": "Title is required"}), 400
         if not link:
             return jsonify({"error": "Link is required"}), 400
-        if activity_type not in ("cultural", "favorite"):
-            return jsonify({"error": "Type must be 'cultural' or 'favorite'"}), 400
+        VALID_TYPES = (
+            "cultural", "favorite", "history", "nature", "gastronomy",
+            "craft", "sport", "event", "wellness", "family", "nocturnal", "tech",
+        )
+        if activity_type not in VALID_TYPES:
+            return jsonify({"error": f"Invalid type. Must be one of: {', '.join(VALID_TYPES)}"}), 400
 
         image = request.files.get("image")
         image_path = existing["image_path"]

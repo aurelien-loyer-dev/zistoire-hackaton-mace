@@ -31,6 +31,7 @@ services:
       QRCODE_SERVICE_URL: http://qrcode-service:5000
       UPLOAD_DIR: /data/uploads
       QRCODE_DIR: /data/qrcodes
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL:-http://localhost:5173}
     depends_on:
       db:
         condition: service_healthy
