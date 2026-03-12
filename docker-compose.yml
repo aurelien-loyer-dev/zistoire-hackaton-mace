@@ -74,7 +74,7 @@ services:
   # ── Client API (read-only Flask) ──────────────────────────
   client-api:
     build:
-      context: ./client-api
+      context: ./client/backend
     restart: unless-stopped
     ports:
       - "3002:3002"
@@ -88,7 +88,7 @@ services:
   # ── Client App (Vite) ───────────────────────────────────
   client:
     build:
-      context: ./client
+      context: ./client/frontend
     restart: unless-stopped
     ports:
       - "5173:5173"
@@ -97,7 +97,7 @@ services:
     depends_on:
       - client-api
     volumes:
-      - ./client:/app
+      - ./client/frontend:/app
       - client_node_modules:/app/node_modules
 
 volumes:
