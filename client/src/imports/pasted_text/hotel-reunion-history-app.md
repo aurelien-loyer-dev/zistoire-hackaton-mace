@@ -8,7 +8,7 @@ Edmond Albius
 
 Mafate
 
-Madame Desbassyns
+Madame Desbassayns
 
 Le volcan
 
@@ -226,7 +226,7 @@ Edmond Albius
 
 Mafate
 
-Madame Desbassyns
+Madame Desbassayns
 
 Cité du Volcan
 
@@ -304,7 +304,7 @@ Albius → activité autour de la vanille / jardin / visite
 
 Mafate → randonnée / guide
 
-Desbassyns → musée / domaine / visite
+Desbassayns → musée / domaine / visite
 
 4. Bloc “En savoir plus”
 
@@ -361,7 +361,7 @@ albius
 
 mafate
 
-desbassyns
+Desbassayns
 
 volcan
 
@@ -409,7 +409,7 @@ Edmond Albius
 
 Mafate
 
-Madame Desbassyns
+Madame Desbassayns
 
 Le volcan
 

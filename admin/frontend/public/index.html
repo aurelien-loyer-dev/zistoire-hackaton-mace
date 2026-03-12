@@ -6,14 +6,33 @@
     <title>Zistoir — Administration</title>
     <style>
       *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-      body { background: #f5f0e8; color: #2d2416; }
+      body { background: #f5f0e8; color: #2d2416; transition: background 0.3s, color 0.3s; }
+      [data-theme="dark"] body { background: #0f0f17; color: #e4e2df; }
+
       input:focus, textarea:focus, select:focus {
         border-color: #A0522D !important;
         box-shadow: 0 0 0 3px rgba(160,82,45,0.12);
       }
+      [data-theme="dark"] input:focus,
+      [data-theme="dark"] textarea:focus,
+      [data-theme="dark"] select:focus {
+        border-color: #c4693a !important;
+        box-shadow: 0 0 0 3px rgba(196,105,58,0.2);
+      }
+
       ::-webkit-scrollbar { width: 6px; }
       ::-webkit-scrollbar-track { background: #f5f0e8; }
       ::-webkit-scrollbar-thumb { background: #D4C4A8; border-radius: 3px; }
+      [data-theme="dark"] ::-webkit-scrollbar-track { background: #0f0f17; }
+      [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #2a2a38; }
+
+      select option { background: #ffffff; color: #2d2416; }
+      [data-theme="dark"] select option { background: #1a1a26; color: #e4e2df; }
+
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
     </style>
   </head>
   <body>

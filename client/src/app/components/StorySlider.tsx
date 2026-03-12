@@ -19,7 +19,7 @@ export function StorySlider({ slides }: StorySliderProps) {
 
   return (
     <div className="w-full max-w-4xl mx-auto">
-      <div className="relative bg-white rounded-2xl shadow-lg p-8 md:p-12 min-h-[300px] flex flex-col">
+      <div className="relative bg-card rounded-2xl shadow-lg p-8 md:p-12 min-h-[300px] flex flex-col transition-colors duration-300">
         {/* Slide Content */}
         <div className="flex-1 flex items-center justify-center mb-8">
           <AnimatePresence mode="wait">

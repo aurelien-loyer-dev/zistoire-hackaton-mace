@@ -50,24 +50,26 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
+  --background: #0f0f17;
+  --foreground: #e4e2df;
+  --card: #1a1a26;
+  --card-foreground: #e4e2df;
+  --popover: #1a1a26;
+  --popover-foreground: #e4e2df;
+  --primary: #e4e2df;
+  --primary-foreground: #0f0f17;
+  --secondary: #222232;
+  --secondary-foreground: #e4e2df;
+  --muted: #222232;
+  --muted-foreground: #8888a0;
+  --accent: #222232;
+  --accent-foreground: #e4e2df;
+  --destructive: #ff6b6b;
+  --destructive-foreground: #2a1515;
+  --border: #2a2a3a;
+  --input: #2a2a3a;
+  --input-background: #141420;
+  --switch-background: #3a3a4a;
   --ring: oklch(0.439 0 0);
   --font-weight-medium: 500;
   --font-weight-normal: 400;
@@ -76,14 +78,22 @@
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar: #1a1a26;
+  --sidebar-foreground: #e4e2df;
   --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-primary-foreground: #e4e2df;
+  --sidebar-accent: #222232;
+  --sidebar-accent-foreground: #e4e2df;
+  --sidebar-border: #2a2a3a;
   --sidebar-ring: oklch(0.439 0 0);
+
+  /* Reunion island dark colors */
+  --ocean-blue: #3d8ac4;
+  --tropical-green: #5cb88a;
+  --sand-beige: #1a1a26;
+  --terracotta: #c4693a;
+  --volcano-orange: #ff6e4a;
+  --coral-red: #ff8585;
 }
 
 @theme inline {

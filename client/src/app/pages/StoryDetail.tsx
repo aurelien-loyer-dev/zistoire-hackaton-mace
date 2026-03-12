@@ -18,7 +18,7 @@ export function StoryDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background transition-colors duration-300">
         <Header />
         <div className="container mx-auto px-4 py-16 text-center">
           <p className="text-lg" style={{ color: "var(--muted-foreground)" }}>Chargement...</p>
@@ -30,7 +30,7 @@ export function StoryDetail() {
 
   if (error || !story) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background transition-colors duration-300">
         <Header />
         <div className="container mx-auto px-4 py-16 text-center">
           <h1 className="text-4xl mb-4">Histoire non trouvée</h1>
@@ -42,7 +42,7 @@ export function StoryDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background transition-colors duration-300">
       <Header />
 
       {/* Back Button */}
@@ -119,11 +119,11 @@ export function StoryDetail() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="max-w-4xl mx-auto"
         >
-          <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+          <div className="bg-card rounded-2xl shadow-lg p-8 md:p-12 transition-colors duration-300">
             <h2 className="text-3xl mb-6" style={{ fontWeight: "600" }}>
               L'histoire complète
             </h2>
-            <div className="prose prose-lg max-w-none">
+            <div className="prose prose-lg max-w-none dark:prose-invert">
               <p className="text-lg leading-relaxed" style={{ color: "var(--foreground)" }}>
                 {story.fullText}
               </p>

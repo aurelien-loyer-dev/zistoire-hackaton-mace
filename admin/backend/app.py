@@ -16,6 +16,7 @@ QRCODE_DIR = os.environ.get("QRCODE_DIR", "/data/qrcodes")
 QRCODE_SERVICE_URL = os.environ.get("QRCODE_SERVICE_URL", "http://qrcode-service:5000")
 DATABASE_URL = os.environ.get("DATABASE_URL")
 ADMIN_BACKEND_URL = os.environ.get("ADMIN_BACKEND_URL", "http://localhost:3001")
+PUBLIC_SITE_URL = os.environ.get("PUBLIC_SITE_URL", "http://localhost:5173")
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(QRCODE_DIR, exist_ok=True)
@@ -101,8 +102,12 @@ def create_activity():
         return jsonify({"error": "Link is required"}), 400
     if not image:
         return jsonify({"error": "Image is required"}), 400
-    if activity_type not in ("cultural", "favorite"):
-        return jsonify({"error": "Type must be 'cultural' or 'favorite'"}), 400
+    VALID_TYPES = (
+        "cultural", "favorite", "history", "nature", "gastronomy",
+        "craft", "sport", "event", "wellness", "family", "nocturnal", "tech",
+    )
+    if activity_type not in VALID_TYPES:
+        return jsonify({"error": f"Invalid type. Must be one of: {', '.join(VALID_TYPES)}"}), 400
     if not any(t.strip() for t in learn_more_texts):
         return jsonify({"error": "At least one learn_more entry is required"}), 400
 
@@ -144,11 +149,12 @@ def create_activity():
         cur.close()
         conn.close()
 
-    # Generate QR code via the microservice (content = link so scanning redirects to it)
+    # Generate QR code pointing to the activity page on the public site
+    activity_page_url = f"{PUBLIC_SITE_URL}/histoires/{slug}"
     try:
         resp = requests.post(
             f"{QRCODE_SERVICE_URL}/generate",
-            json={"content": link, "filename": secure_filename(title)},
+            json={"content": activity_page_url, "filename": secure_filename(title)},
             timeout=5,
         )
         resp.raise_for_status()
@@ -173,6 +179,104 @@ def create_activity():
         "learn_more": inserted_learn_more,
         "created_at": result["created_at"].isoformat() if result["created_at"] else None,
     }), 201
+
+
+@app.route("/api/activities/<int:activity_id>", methods=["PUT"])
+def update_activity(activity_id):
+    conn = psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM activities WHERE id = %s", (activity_id,))
+        existing = cur.fetchone()
+        if not existing:
+            cur.close()
+            conn.close()
+            return jsonify({"error": "Activity not found"}), 404
+
+        title = request.form.get("title", existing["title"])
+        description = request.form.get("description", existing["description"] or "")
+        link = request.form.get("link", existing["link"] or "")
+        intro = request.form.get("intro", existing["intro"] or "")
+        history = request.form.get("history", existing["history"] or "")
+        partner = request.form.get("partner", str(existing["partner"]).lower()).lower() == "true"
+        activity_type = request.form.get("type", existing["type"])
+        slug = request.form.get("slug", existing["slug"] or "").strip() or (slugify(title) if title else "")
+        subtitle = request.form.get("subtitle", existing["subtitle"] or "")
+        category = request.form.get("category", existing["category"] or "")
+        is_current_event = request.form.get("is_current_event", str(existing["is_current_event"]).lower()).lower() == "true"
+        partner_name = request.form.get("partner_name", existing["partner_name"] or "")
+        learn_more_texts = [
+            request.form.get("learn_more_1", ""),
+            request.form.get("learn_more_2", ""),
+            request.form.get("learn_more_3", ""),
+            request.form.get("learn_more_4", ""),
+        ]
+
+        if not title:
+            return jsonify({"error": "Title is required"}), 400
+        if not link:
+            return jsonify({"error": "Link is required"}), 400
+        VALID_TYPES = (
+            "cultural", "favorite", "history", "nature", "gastronomy",
+            "craft", "sport", "event", "wellness", "family", "nocturnal", "tech",
+        )
+        if activity_type not in VALID_TYPES:
+            return jsonify({"error": f"Invalid type. Must be one of: {', '.join(VALID_TYPES)}"}), 400
+
+        image = request.files.get("image")
+        image_path = existing["image_path"]
+        if image:
+            filename = secure_filename(title) + ".png"
+            image.save(os.path.join(UPLOAD_DIR, filename))
+            image_path = f"{ADMIN_BACKEND_URL}/uploads/{filename}"
+
+        cur.execute(
+            """UPDATE activities SET
+               slug=%s, title=%s, subtitle=%s, image_path=%s, category=%s,
+               description=%s, link=%s, intro=%s, history=%s,
+               partner=%s, partner_name=%s, is_current_event=%s, type=%s
+               WHERE id=%s""",
+            (slug, title, subtitle, image_path, category, description, link, intro, history,
+             partner, partner_name, is_current_event, activity_type, activity_id),
+        )
+
+        cur.execute("DELETE FROM learn_more WHERE activity_id = %s", (activity_id,))
+        inserted_learn_more = []
+        for pos, text in enumerate(learn_more_texts, start=1):
+            if text.strip():
+                cur.execute(
+                    "INSERT INTO learn_more (activity_id, content, position) VALUES (%s, %s, %s) RETURNING id",
+                    (activity_id, text.strip(), pos),
+                )
+                lm_id = cur.fetchone()["id"]
+                inserted_learn_more.append({"id": lm_id, "content": text.strip(), "position": pos})
+
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        cur.close()
+        conn.close()
+
+    return jsonify({"success": True, "id": activity_id, "learn_more": inserted_learn_more}), 200
+
+
+@app.route("/api/activities/<int:activity_id>", methods=["DELETE"])
+def delete_activity(activity_id):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("SELECT id FROM activities WHERE id = %s", (activity_id,))
+    if not cur.fetchone():
+        cur.close()
+        conn.close()
+        return jsonify({"error": "Activity not found"}), 404
+
+    cur.execute("DELETE FROM learn_more WHERE activity_id = %s", (activity_id,))
+    cur.execute("DELETE FROM activities WHERE id = %s", (activity_id,))
+    cur.close()
+    conn.close()
+    return jsonify({"success": True}), 200
 
 
 @app.route("/uploads/<path:filename>", methods=["GET"])
