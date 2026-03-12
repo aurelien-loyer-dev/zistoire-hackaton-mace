@@ -20,14 +20,6 @@ export function Home() {
 
         {!loading && !error && (
           <>
-            {/* Current Events Section */}
-            {currentEventStories.length > 0 && (
-              <HorizontalStoryCarousel
-                stories={currentEventStories}
-                title="Histoires liées à l'actualité"
-                subtitle="Découvrez les récits en lien avec les événements du moment"
-              />
-            )}
             {/* Sponsored Stories Section */}
             {sponsoredStories.length > 0 && (
               <div className="py-12" style={{ background: "linear-gradient(to bottom, rgba(212, 196, 168, 0.1), transparent)" }}>
@@ -37,6 +29,15 @@ export function Home() {
                   subtitle="Explorez ces récits avec nos partenaires culturels"
                 />
               </div>
+            )}
+
+            {/* Current Events Section */}
+            {currentEventStories.length > 0 && (
+              <HorizontalStoryCarousel
+                stories={currentEventStories}
+                title="Histoires liées à l'actualité"
+                subtitle="Découvrez les récits en lien avec les événements du moment"
+              />
             )}
 
             {/* All Stories Section */}
