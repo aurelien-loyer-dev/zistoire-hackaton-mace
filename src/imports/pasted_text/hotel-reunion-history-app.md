@@ -183,7 +183,7 @@ Cette section doit avoir un style visuel fort et premium.
 
 Créer une deuxième section horizontale intitulée par exemple :
 
-Histoires mises en avant par nos partenaires
+Nos activités favorites
 
 But :
 mettre en avant des histoires sponsorisées / partenaires qui paient pour être plus visibles.

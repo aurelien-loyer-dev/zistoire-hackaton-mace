@@ -30,7 +30,7 @@ export function Home() {
           <div className="py-12" style={{ background: "linear-gradient(to bottom, rgba(212, 196, 168, 0.1), transparent)" }}>
             <HorizontalStoryCarousel
               stories={sponsoredStories}
-              title="Histoires mises en avant par nos partenaires"
+              title="Nos activités favorites"
               subtitle="Explorez ces récits avec nos partenaires culturels"
             />
           </div>

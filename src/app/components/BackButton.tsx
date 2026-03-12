@@ -5,8 +5,8 @@ export function BackButton() {
   return (
     <Link
       to="/"
-      className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white shadow-md hover:shadow-lg transition-all hover:scale-105"
-      style={{ color: "var(--ocean-blue)", fontWeight: "500" }}
+      className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-current transition-all hover:opacity-80 hover:scale-105"
+      style={{ color: "var(--terracotta)", fontWeight: "500" }}
     >
       <ArrowLeft className="w-5 h-5" />
       <span>Retour à l'accueil</span>

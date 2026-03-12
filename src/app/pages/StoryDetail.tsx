@@ -1,4 +1,5 @@
 import { useParams } from "react-router";
+import { useEffect } from "react";
 import { motion } from "motion/react";
 import { Header } from "../components/Header";
 import { BackButton } from "../components/BackButton";
@@ -10,6 +11,10 @@ import { getStoryBySlug } from "../data/stories";
 export function StoryDetail() {
   const { slug } = useParams<{ slug: string }>();
   const story = slug ? getStoryBySlug(slug) : undefined;
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [slug]);
 
   if (!story) {
     return (

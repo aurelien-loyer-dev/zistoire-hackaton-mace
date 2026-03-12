@@ -1,12 +1,10 @@
-import { Logo } from "./Logo";
-
 export function Footer() {
   return (
     <footer className="w-full border-t border-border/50 py-12" style={{ background: "var(--sand-beige)" }}>
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex flex-col items-center md:items-start gap-2">
-            <Logo variant="large" />
+            <img src="/images/logo.png" alt="Logo" className="h-24" />
             <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
               Découvrez l'histoire de La Réunion
             </p>

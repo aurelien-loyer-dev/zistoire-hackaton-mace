@@ -1,12 +1,15 @@
 import { motion } from "motion/react";
 
 export function HeroSection() {
+  const handleScroll = () => {
+    document.getElementById("stories")?.scrollIntoView({ behavior: "smooth" });
+  };
   return (
     <section className="relative w-full h-[70vh] min-h-[500px] overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
-          src="https://images.unsplash.com/photo-1772984752279-0fe1af354f83?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyZXVuaW9uJTIwaXNsYW5kJTIwdHJvcGljYWwlMjBsYW5kc2NhcGUlMjBvY2VhbnxlbnwxfHx8fDE3NzMyOTM5NTd8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+          src="public/images/bc-hotel.jpg"
           alt="La Réunion"
           className="w-full h-full object-cover"
         />
@@ -34,20 +37,21 @@ export function HeroSection() {
           >
             Explorez les récits historiques et culturels qui font l'âme de notre île intense
           </motion.p>
-          <motion.a
+          <motion.button
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            href="#stories"
-            className="inline-block px-8 py-4 rounded-full text-lg transition-all hover:scale-105"
+            onClick={handleScroll}
+            className="inline-block px-8 py-4 rounded-full text-lg transition-all hover:opacity-90 hover:scale-105 cursor-pointer border-2 border-white/80"
             style={{
-              background: "linear-gradient(135deg, var(--ocean-blue) 0%, var(--tropical-green) 100%)",
+              background: "var(--terracotta)",
               color: "white",
               fontWeight: "500",
+              letterSpacing: "0.04em",
             }}
           >
-            Découvrir les histoires
-          </motion.a>
+            Découvrir
+          </motion.button>
         </div>
       </div>
     </section>
