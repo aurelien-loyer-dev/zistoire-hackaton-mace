@@ -1,11 +1,13 @@
 import { motion } from "motion/react";
+import { ChevronDown } from "lucide-react";
 
 export function HeroSection() {
   const handleScroll = () => {
     document.getElementById("stories")?.scrollIntoView({ behavior: "smooth" });
   };
+
   return (
-    <section className="relative w-full h-[70vh] min-h-[500px] overflow-hidden">
+    <section className="relative w-full h-screen overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
@@ -54,6 +56,18 @@ export function HeroSection() {
           </motion.button>
         </div>
       </div>
+
+      {/* Scroll arrow */}
+      <motion.button
+        onClick={handleScroll}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, y: [0, 10, 0] }}
+        transition={{ opacity: { delay: 1, duration: 0.6 }, y: { delay: 1, duration: 1.4, repeat: Infinity, ease: "easeInOut" } }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/80 hover:text-white cursor-pointer transition-colors"
+        aria-label="Défiler vers le bas"
+      >
+        <ChevronDown className="w-10 h-10" strokeWidth={1.5} />
+      </motion.button>
     </section>
   );
 }
