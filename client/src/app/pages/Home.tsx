@@ -17,19 +17,6 @@ export function Home() {
       <HeroSection />
 
       <main id="stories" className="py-16">
-        {/* Current Events Section */}
-        {currentEventStories.length > 0 && (
-          <HorizontalStoryCarousel
-            stories={currentEventStories}
-            title="Histoires liées à l'actualité"
-            subtitle="Découvrez les récits en lien avec les événements du moment"
-          />
-        )}
-        {error && (
-          <div className="container mx-auto px-4 py-8">
-            <p style={{ color: "#ef4444" }}>Erreur : {error}</p>
-          </div>
-        )}
 
         {!loading && !error && (
           <>
@@ -37,11 +24,10 @@ export function Home() {
             {currentEventStories.length > 0 && (
               <HorizontalStoryCarousel
                 stories={currentEventStories}
-                title="Histoires liées à l'actualité réunionnaise"
+                title="Histoires liées à l'actualité"
                 subtitle="Découvrez les récits en lien avec les événements du moment"
               />
             )}
-
             {/* Sponsored Stories Section */}
             {sponsoredStories.length > 0 && (
               <div className="py-12" style={{ background: "linear-gradient(to bottom, rgba(212, 196, 168, 0.1), transparent)" }}>

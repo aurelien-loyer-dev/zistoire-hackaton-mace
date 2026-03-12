@@ -57,27 +57,27 @@ BEGIN
       (act_id, 'Classé au patrimoine mondial de l''UNESCO, Mafate abrite plusieurs petits villages et offre des paysages spectaculaires aux randonneurs du monde entier.', 4);
   END IF;
 
-  -- ── Madame Desbassyns ─────────────────────────────────────────────────────
+  -- ── Madame Desbassayns ─────────────────────────────────────────────────────
   INSERT INTO activities (slug, title, subtitle, image_path, category, link, description, history, partner, partner_name, is_current_event, type)
   VALUES (
-    'desbassyns',
-    'Madame Desbassyns',
+    'Desbassayns',
+    'Madame Desbassayns',
     'Figure controversée de l''histoire réunionnaise',
-    'http://localhost:3001/uploads/Madame_Desbassyns.png',
+    'http://localhost:3001/uploads/Madame_Desbassayns.png',
     'Personnalités',
     'https://example.com/musee-villele',
     'Une grande propriétaire terrienne du XIXe siècle, symbole du système esclavagiste.',
-    'Françoise Châtelain, devenue Madame Desbassyns par son mariage, est une figure incontournable et controversée de l''histoire de La Réunion. Née en 1755, elle hérite et développe un empire foncier considérable, notamment grâce à la culture du café et de la canne à sucre. Elle possédait des centaines d''esclaves et était réputée pour sa grande richesse. Sa mémoire reste marquée par les légendes qui la décrivent comme une maîtresse impitoyable. Le domaine de Villèle, qu''elle a habité, est aujourd''hui un musée historique qui permet de découvrir la vie des grands propriétaires terriens de l''époque coloniale, tout en questionnant le système esclavagiste qui a façonné l''île.',
+    'Françoise Châtelain, devenue Madame Desbassayns par son mariage, est une figure incontournable et controversée de l''histoire de La Réunion. Née en 1755, elle hérite et développe un empire foncier considérable, notamment grâce à la culture du café et de la canne à sucre. Elle possédait des centaines d''esclaves et était réputée pour sa grande richesse. Sa mémoire reste marquée par les légendes qui la décrivent comme une maîtresse impitoyable. Le domaine de Villèle, qu''elle a habité, est aujourd''hui un musée historique qui permet de découvrir la vie des grands propriétaires terriens de l''époque coloniale, tout en questionnant le système esclavagiste qui a façonné l''île.',
     TRUE,
     'Musée de Villèle',
     FALSE,
     'cultural'
   ) ON CONFLICT (slug) DO NOTHING;
 
-  SELECT id INTO act_id FROM activities WHERE slug = 'desbassyns';
+  SELECT id INTO act_id FROM activities WHERE slug = 'Desbassayns';
   IF NOT EXISTS (SELECT 1 FROM learn_more WHERE activity_id = act_id) THEN
     INSERT INTO learn_more (activity_id, content, position) VALUES
-      (act_id, 'Madame Desbassyns (1755-1846) fut l''une des femmes les plus riches et puissantes de La Réunion au XIXe siècle, propriétaire de vastes domaines et de centaines d''esclaves.', 1),
+      (act_id, 'Madame Desbassayns (1755-1846) fut l''une des femmes les plus riches et puissantes de La Réunion au XIXe siècle, propriétaire de vastes domaines et de centaines d''esclaves.', 1),
       (act_id, 'Son nom est associé à la fois à la prospérité économique de l''île et aux aspects les plus sombres de l''esclavage. Les légendes locales lui prêtent des pratiques cruelles.', 2),
       (act_id, 'Le domaine de Villèle, sa résidence principale, est aujourd''hui un musée qui témoigne de cette époque complexe de l''histoire réunionnaise.', 3),
       (act_id, 'Son histoire invite à réfléchir sur le passé colonial de l''île et sur la mémoire de l''esclavage, des sujets encore sensibles aujourd''hui.', 4);
@@ -170,8 +170,8 @@ BEGIN
     'http://localhost:3001/uploads/Le_Musee_de_Villele.png',
     'Patrimoine culturel',
     'https://example.com/musee-villèle',
-    'Ancienne demeure de Madame Desbassyns, témoin de l''époque des grandes plantations.',
-    'Le Musée de Villèle est un lieu de mémoire essentiel pour comprendre l''histoire de La Réunion. Ancienne propriété de la famille Desbassyns, ce domaine incarne l''opulence des grands propriétaires terriens de l''époque coloniale, mais aussi les injustices du système esclavagiste. Le musée propose des parcours pédagogiques qui abordent sans détour les réalités de cette période : le travail forcé, la vie quotidienne des esclaves, l''engagisme après l''abolition de 1848. Les collections comprennent des objets d''époque, des documents historiques et des reconstitutions fidèles. La visite du domaine permet de prendre conscience de la richesse et de la complexité de l''histoire réunionnaise, entre splendeur architecturale et mémoire douloureuse.',
+    'Ancienne demeure de Madame Desbassayns, témoin de l''époque des grandes plantations.',
+    'Le Musée de Villèle est un lieu de mémoire essentiel pour comprendre l''histoire de La Réunion. Ancienne propriété de la famille Desbassayns, ce domaine incarne l''opulence des grands propriétaires terriens de l''époque coloniale, mais aussi les injustices du système esclavagiste. Le musée propose des parcours pédagogiques qui abordent sans détour les réalités de cette période : le travail forcé, la vie quotidienne des esclaves, l''engagisme après l''abolition de 1848. Les collections comprennent des objets d''époque, des documents historiques et des reconstitutions fidèles. La visite du domaine permet de prendre conscience de la richesse et de la complexité de l''histoire réunionnaise, entre splendeur architecturale et mémoire douloureuse.',
     TRUE,
     'Musée de Villèle',
     FALSE,
