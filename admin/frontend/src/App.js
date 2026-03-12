@@ -56,6 +56,10 @@ function App() {
       setFormError("L'image de couverture est obligatoire.");
       return;
     }
+    if (!learnMore1.trim() && !learnMore2.trim() && !learnMore3.trim() && !learnMore4.trim()) {
+      setFormError("Au moins un champ 'En savoir plus' doit être rempli.");
+      return;
+    }
 
     setSubmitting(true);
     const formData = new FormData();
@@ -107,6 +111,8 @@ function App() {
     return a.title.toLowerCase().includes(q) || (a.description && a.description.toLowerCase().includes(q));
   });
 
+  const learnMoreEmpty = !learnMore1.trim() && !learnMore2.trim() && !learnMore3.trim() && !learnMore4.trim();
+
   return (
     <>
       {/* ── Header ── */}
@@ -144,101 +150,141 @@ function App() {
         {showModal && (
           <div style={overlayStyle} onClick={closeModal}>
             <div style={modalStyle} onClick={(e) => e.stopPropagation()}>
+              {/* Header */}
               <div style={modalHeaderStyle}>
-                <h2 style={{ margin: 0 }}>Nouvelle activité</h2>
+                <div>
+                  <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#fff" }}>Nouvelle activité</h2>
+                  <p style={{ margin: "3px 0 0", fontSize: 12, color: "rgba(255,255,255,0.65)" }}>
+                    Les champs marqués <span style={{ color: "#fca5a5" }}>*</span> sont obligatoires
+                  </p>
+                </div>
                 <button onClick={closeModal} style={closeButtonStyle}>&times;</button>
               </div>
-              {formError && <p style={{ color: "red", margin: "12px 0 0" }}>{formError}</p>}
-              <form onSubmit={handleSubmit} style={{ marginTop: 16 }}>
-                <label style={labelStyle}>
-                  Titre *
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    style={inputStyle}
-                  />
-                </label>
 
-                <label style={labelStyle}>
-                  Description
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    rows={3}
-                    style={inputStyle}
-                  />
-                </label>
+              <div style={{ padding: "6px 24px 24px" }}>
+                {formError && (
+                  <div style={errorBannerStyle}>
+                    <span style={{ marginRight: 8, fontSize: 16 }}>⚠</span>{formError}
+                  </div>
+                )}
 
-                <label style={labelStyle}>
-                  Lien * (utilisé pour le QR code)
-                  <input
-                    type="url"
-                    value={link}
-                    onChange={(e) => setLink(e.target.value)}
-                    placeholder="https://..."
-                    required
-                    style={inputStyle}
-                  />
-                </label>
+                <form onSubmit={handleSubmit} style={{ marginTop: 16 }}>
+                  {/* ── Informations générales ── */}
+                  <div style={sectionTitleStyle}>Informations générales</div>
 
-                <label style={labelStyle}>
-                  Intro
-                  <textarea
-                    value={intro}
-                    onChange={(e) => setIntro(e.target.value)}
-                    rows={3}
-                    style={inputStyle}
-                  />
-                </label>
+                  <label style={labelStyle}>
+                    Titre <span style={requiredMarkStyle}>*</span>
+                    <input
+                      type="text"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="Nom de l'activité"
+                      style={{ ...inputStyle, ...(formError && !title.trim() ? errorInputStyle : {}) }}
+                    />
+                  </label>
 
-                <label style={labelStyle}>
-                  Histoire
-                  <textarea
-                    value={history}
-                    onChange={(e) => setHistory(e.target.value)}
-                    rows={5}
-                    style={inputStyle}
-                  />
-                </label>
+                  <label style={labelStyle}>
+                    Lien <span style={requiredMarkStyle}>*</span>
+                    <span style={{ fontWeight: 400, fontSize: 11, color: "#9ca3af", marginLeft: 4 }}>(utilisé pour le QR code)</span>
+                    <input
+                      type="url"
+                      value={link}
+                      onChange={(e) => setLink(e.target.value)}
+                      placeholder="https://..."
+                      style={{ ...inputStyle, ...(formError && !link.trim() ? errorInputStyle : {}) }}
+                    />
+                  </label>
 
-                <fieldset style={{ border: "1px solid #ccc", borderRadius: 4, padding: "12px 16px", marginBottom: 12 }}>
-                  <legend style={{ fontWeight: 600, padding: "0 4px" }}>En savoir plus (jusqu'à 4 textes)</legend>
-                  {[learnMore1, learnMore2, learnMore3, learnMore4].map((val, i) => {
-                    const setters = [setLearnMore1, setLearnMore2, setLearnMore3, setLearnMore4];
-                    return (
-                      <label key={i} style={{ ...labelStyle, marginBottom: 8 }}>
-                        Texte {i + 1}
-                        <textarea
-                          value={val}
-                          onChange={(e) => setters[i](e.target.value)}
-                          rows={2}
-                          style={inputStyle}
+                  <label style={labelStyle}>
+                    Description
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      rows={3}
+                      style={inputStyle}
+                      placeholder="Courte description de l'activité..."
+                    />
+                  </label>
+
+                  {/* ── Contenu ── */}
+                  <div style={sectionTitleStyle}>Contenu</div>
+
+                  <label style={labelStyle}>
+                    Intro
+                    <textarea
+                      value={intro}
+                      onChange={(e) => setIntro(e.target.value)}
+                      rows={3}
+                      style={inputStyle}
+                      placeholder="Texte d'introduction..."
+                    />
+                  </label>
+
+                  <label style={labelStyle}>
+                    Histoire
+                    <textarea
+                      value={history}
+                      onChange={(e) => setHistory(e.target.value)}
+                      rows={4}
+                      style={inputStyle}
+                      placeholder="Histoire complète de l'activité..."
+                    />
+                  </label>
+
+                  {/* ── En savoir plus ── */}
+                  <div style={sectionTitleStyle}>
+                    En savoir plus <span style={requiredMarkStyle}>*</span>
+                    <span style={{ fontWeight: 400, fontSize: 11, color: "#9ca3af", marginLeft: 4 }}>(au moins 1 requis)</span>
+                  </div>
+                  <div style={learnMoreGridStyle}>
+                    {[learnMore1, learnMore2, learnMore3, learnMore4].map((val, i) => {
+                      const setters = [setLearnMore1, setLearnMore2, setLearnMore3, setLearnMore4];
+                      return (
+                        <label key={i} style={{ ...labelStyle, marginBottom: 8 }}>
+                          Texte {i + 1}{i === 0 && <span style={requiredMarkStyle}> *</span>}
+                          <textarea
+                            value={val}
+                            onChange={(e) => setters[i](e.target.value)}
+                            rows={2}
+                            style={{ ...inputStyle, ...(formError && learnMoreEmpty ? errorInputStyle : {}) }}
+                            placeholder={i === 0 ? "Requis si les autres sont vides" : `Texte ${i + 1}...`}
+                          />
+                        </label>
+                      );
+                    })}
+                  </div>
+
+                  {/* ── Médias ── */}
+                  <div style={sectionTitleStyle}>Médias</div>
+
+                  <label style={labelStyle}>
+                    Image de couverture <span style={requiredMarkStyle}>*</span>
+                    <div style={{ ...fileInputWrapperStyle, ...(formError && !image ? errorInputStyle : {}) }}>
+                      <span style={{ color: image ? "#374151" : "#9ca3af", fontSize: 13, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {image ? image.name : "Aucun fichier sélectionné (PNG uniquement)"}
+                      </span>
+                      <label style={fileButtonStyle}>
+                        Parcourir
+                        <input
+                          type="file"
+                          accept="image/png"
+                          onChange={(e) => setImage(e.target.files[0] || null)}
+                          style={{ display: "none" }}
                         />
                       </label>
-                    );
-                  })}
-                </fieldset>
+                    </div>
+                  </label>
 
-                <label style={labelStyle}>
-                  Image de couverture *
-                  <input
-                    type="file"
-                    accept="image/png"
-                    onChange={(e) => setImage(e.target.files[0] || null)}
-                    style={{ marginTop: 4 }}
-                  />
-                </label>
-
-                <div style={{ display: "flex", justifyContent: "flex-end", gap: 12, marginTop: 8 }}>
-                  <button type="button" onClick={closeModal} style={cancelButtonStyle}>
-                    Annuler
-                  </button>
-                  <button type="submit" disabled={submitting} style={submitButtonStyle}>
-                    {submitting ? "Création en cours..." : "Créer l'activité"}
-                  </button>
-                </div>
-              </form>
+                  <div style={formActionsStyle}>
+                    <button type="button" onClick={closeModal} style={cancelButtonStyle}>
+                      Annuler
+                    </button>
+                    <button type="submit" disabled={submitting} style={{ ...submitButtonStyle, ...(submitting ? { opacity: 0.65, cursor: "not-allowed" } : {}) }}>
+                      {submitting ? "Création en cours…" : "✓ Créer l'activité"}
+                    </button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         )}
@@ -321,7 +367,9 @@ const createButtonStyle = {
 const overlayStyle = {
   position: "fixed",
   inset: 0,
-  background: "rgba(0,0,0,0.5)",
+  background: "rgba(0,0,0,0.45)",
+  backdropFilter: "blur(8px)",
+  WebkitBackdropFilter: "blur(8px)",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -330,64 +378,83 @@ const overlayStyle = {
 
 const modalStyle = {
   background: "#fff",
-  borderRadius: 8,
-  padding: 24,
+  borderRadius: 12,
   width: "90%",
-  maxWidth: 480,
-  maxHeight: "90vh",
+  maxWidth: 560,
+  maxHeight: "92vh",
   overflowY: "auto",
+  boxShadow: "0 24px 64px rgba(0,0,0,0.35), 0 4px 20px rgba(0,0,0,0.15)",
 };
 
 const modalHeaderStyle = {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
+  background: "linear-gradient(135deg, #1e3a5f 0%, #2c3e50 100%)",
+  borderRadius: "12px 12px 0 0",
+  padding: "20px 24px",
 };
 
 const closeButtonStyle = {
-  background: "none",
+  background: "rgba(255,255,255,0.15)",
   border: "none",
-  fontSize: 24,
+  fontSize: 18,
   cursor: "pointer",
-  color: "#333",
+  color: "#fff",
   lineHeight: 1,
+  width: 32,
+  height: 32,
+  borderRadius: "50%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  flexShrink: 0,
 };
 
 const labelStyle = {
   display: "block",
-  marginBottom: 16,
+  marginBottom: 14,
   fontWeight: 600,
+  fontSize: 13,
+  color: "#374151",
 };
 
 const inputStyle = {
   display: "block",
   width: "100%",
-  marginTop: 4,
-  padding: "8px 10px",
-  border: "1px solid #ccc",
-  borderRadius: 4,
+  marginTop: 5,
+  padding: "9px 12px",
+  border: "1.5px solid #d1d5db",
+  borderRadius: 6,
   fontSize: 14,
   boxSizing: "border-box",
+  fontFamily: "inherit",
+  resize: "vertical",
+  outline: "none",
+  transition: "border-color 0.15s",
 };
 
 const cancelButtonStyle = {
   padding: "10px 20px",
-  background: "#e0e0e0",
-  color: "#333",
-  border: "none",
-  borderRadius: 4,
+  background: "transparent",
+  color: "#6b7280",
+  border: "1.5px solid #d1d5db",
+  borderRadius: 6,
   fontSize: 14,
   cursor: "pointer",
+  fontWeight: 500,
 };
 
 const submitButtonStyle = {
-  padding: "10px 20px",
-  background: "#0070f3",
+  padding: "10px 24px",
+  background: "linear-gradient(135deg, #0070f3 0%, #0051b0 100%)",
   color: "#fff",
   border: "none",
-  borderRadius: 4,
+  borderRadius: 6,
   fontSize: 14,
   cursor: "pointer",
+  fontWeight: 600,
+  boxShadow: "0 2px 8px rgba(0,112,243,0.4)",
 };
 
 const gridStyle = {
@@ -408,6 +475,79 @@ const imgStyle = {
   height: 180,
   objectFit: "cover",
   display: "block",
+};
+
+const sectionTitleStyle = {
+  fontSize: 11,
+  fontWeight: 700,
+  color: "#6b7280",
+  textTransform: "uppercase",
+  letterSpacing: "0.08em",
+  marginBottom: 12,
+  marginTop: 20,
+  paddingBottom: 6,
+  borderBottom: "1px solid #e5e7eb",
+};
+
+const requiredMarkStyle = {
+  color: "#ef4444",
+  fontWeight: 700,
+};
+
+const errorInputStyle = {
+  borderColor: "#ef4444",
+  background: "#fff5f5",
+};
+
+const errorBannerStyle = {
+  display: "flex",
+  alignItems: "center",
+  background: "#fff5f5",
+  color: "#c53030",
+  border: "1px solid #feb2b2",
+  borderRadius: 6,
+  padding: "10px 14px",
+  marginTop: 12,
+  fontSize: 14,
+};
+
+const learnMoreGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: "0 12px",
+};
+
+const fileInputWrapperStyle = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 10,
+  marginTop: 5,
+  padding: "8px 12px",
+  border: "1.5px solid #d1d5db",
+  borderRadius: 6,
+  background: "#f9fafb",
+};
+
+const fileButtonStyle = {
+  padding: "5px 14px",
+  background: "#f3f4f6",
+  color: "#374151",
+  border: "1px solid #d1d5db",
+  borderRadius: 4,
+  fontSize: 13,
+  cursor: "pointer",
+  flexShrink: 0,
+  fontWeight: 500,
+};
+
+const formActionsStyle = {
+  display: "flex",
+  justifyContent: "flex-end",
+  gap: 12,
+  marginTop: 24,
+  paddingTop: 16,
+  borderTop: "1px solid #e5e7eb",
 };
 
 export default App;
