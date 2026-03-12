@@ -28,7 +28,7 @@ export function HeroSection() {
             className="text-5xl md:text-6xl lg:text-7xl mb-6"
             style={{ fontWeight: "700" }}
           >
-            Découvrez La Réunion à travers ses histoires
+            Découvrez La Réunion 
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 30 }}

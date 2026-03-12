@@ -11,7 +11,7 @@ export function Footer() {
           </div>
 
           <div className="flex flex-col items-center md:items-end gap-2 text-sm" style={{ color: "var(--muted-foreground)" }}>
-            <p>© 2026 Zistoir - Tous droits réservés</p>
+            <p>© 2026 Zistoir' - Tous droits réservés</p>
             <p>Une expérience immersive de l'histoire réunionnaise</p>
           </div>
         </div>
