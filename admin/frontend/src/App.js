@@ -419,7 +419,7 @@ function App() {
           {filtered.map((activity) => (
             <div key={activity.id} style={cardStyle}>
               <img
-                src={`${BACKEND_URL}/uploads/${encodeURIComponent(activity.title)}.png`}
+                src={activity.image_path}
                 alt={activity.title}
                 style={imgStyle}
               />

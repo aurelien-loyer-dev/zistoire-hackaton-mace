@@ -36,7 +36,7 @@ services:
         condition: service_healthy
     volumes:
       - ./admin/backend:/app
-      - uploads:/data/uploads
+      - ./admin/uploads:/data/uploads
       - ./admin/qrcodes:/data/qrcodes
 
   # ── Python QR Code Microservice ──────────────────────────
@@ -97,6 +97,5 @@ services:
 
 volumes:
   pgdata:
-  uploads:
   admin_frontend_node_modules:
   client_node_modules:
