@@ -381,9 +381,10 @@ function App() {
               onMouseLeave={(e) => e.currentTarget.style.boxShadow = "0 2px 12px rgba(0,0,0,0.06)"}>
               <div style={{ position: "relative" }}>
                 <img
-                  src={`${BACKEND_URL}/uploads/${encodeURIComponent(activity.title)}.png`}
+                  src={activity.image_path}
                   alt={activity.title}
                   style={imgStyle}
+                  onError={(e) => { e.target.style.opacity = "0.3"; }}
                 />
                 {activity.partner && (
                   <span style={badgeStyle}>Partenaire</span>
