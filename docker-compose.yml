@@ -11,7 +11,7 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./admin/db/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 5s
@@ -21,7 +21,7 @@ services:
   # ── Python Backend ──────────────────────────────────────
   backend:
     build:
-      context: ./backend
+      context: ./admin/backend
     restart: unless-stopped
     ports:
       - "3001:3001"
@@ -34,27 +34,27 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ./backend:/app
+      - ./admin/backend:/app
       - uploads:/data/uploads
-      - ./qrcodes:/data/qrcodes
+      - ./admin/qrcodes:/data/qrcodes
 
   # ── Python QR Code Microservice ──────────────────────────
   qrcode-service:
     build:
-      context: ./qrcode-service
+      context: ./admin/qrcode-service
     restart: unless-stopped
     ports:
       - "5001:5000"
     environment:
       QR_OUTPUT_DIR: /data/qrcodes
     volumes:
-      - ./qrcode-service:/app
-      - ./qrcodes:/data/qrcodes
+      - ./admin/qrcode-service:/app
+      - ./admin/qrcodes:/data/qrcodes
 
-  # ── React Frontend ──────────────────────────────────────
-  frontend:
+  # ── Admin React Frontend ────────────────────────────────
+  admin-frontend:
     build:
-      context: ./frontend
+      context: ./admin/frontend
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -63,10 +63,22 @@ services:
     depends_on:
       - backend
     volumes:
-      - ./frontend:/app
-      - frontend_node_modules:/app/node_modules
+      - ./admin/frontend:/app
+      - admin_frontend_node_modules:/app/node_modules
+
+  # ── Client App (Vite) ───────────────────────────────────
+  client:
+    build:
+      context: ./client
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/app
+      - client_node_modules:/app/node_modules
 
 volumes:
   pgdata:
   uploads:
-  frontend_node_modules:
+  admin_frontend_node_modules:
+  client_node_modules:
