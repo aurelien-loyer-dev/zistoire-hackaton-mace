@@ -34,26 +34,11 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl max-w-3xl mx-auto mb-8"
+            className="text-xl md:text-2xl max-w-3xl mx-auto"
             style={{ fontWeight: "300" }}
           >
             Explorez les récits historiques et culturels qui font l'âme de notre île intense
           </motion.p>
-          <motion.button
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            onClick={handleScroll}
-            className="inline-block px-8 py-4 rounded-full text-lg transition-all hover:opacity-90 hover:scale-105 cursor-pointer border-2 border-white/80"
-            style={{
-              background: "var(--terracotta)",
-              color: "white",
-              fontWeight: "500",
-              letterSpacing: "0.04em",
-            }}
-          >
-            Découvrir
-          </motion.button>
         </div>
       </div>
 
@@ -63,10 +48,11 @@ export function HeroSection() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: [0, 10, 0] }}
         transition={{ opacity: { delay: 1, duration: 0.6 }, y: { delay: 1, duration: 1.4, repeat: Infinity, ease: "easeInOut" } }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/80 hover:text-white cursor-pointer transition-colors"
+        whileHover={{ scale: 1.3, color: "#ffffff" }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/70 cursor-pointer"
         aria-label="Défiler vers le bas"
       >
-        <ChevronDown className="w-10 h-10" strokeWidth={1.5} />
+        <ChevronDown className="w-12 h-12" strokeWidth={1.2} />
       </motion.button>
     </section>
   );
