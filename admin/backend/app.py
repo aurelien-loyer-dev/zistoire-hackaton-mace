@@ -3,6 +3,7 @@ import re
 import unicodedata
 import requests
 import psycopg2
+from urllib.parse import urlparse
 from psycopg2.extras import RealDictCursor
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
@@ -34,6 +35,21 @@ def slugify(text):
     text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("ascii")
     text = re.sub(r"[^\w\s-]", "", text)
     return re.sub(r"[-\s]+", "-", text).strip("-")
+
+
+def normalize_image_url(image_url):
+    if not image_url:
+        return ""
+
+    # Keep partner/external URLs unchanged; only rewrite uploaded image links.
+    if image_url.startswith("/uploads/"):
+        return f"{ADMIN_BACKEND_URL}{image_url}"
+
+    parsed = urlparse(image_url)
+    if parsed.path.startswith("/uploads/"):
+        return f"{ADMIN_BACKEND_URL}{parsed.path}"
+
+    return image_url
 
 
 @app.route("/health", methods=["GET"])
@@ -69,6 +85,7 @@ def list_activities():
     activities = []
     for row in rows:
         activity = dict(row)
+        activity["image_path"] = normalize_image_url(activity.get("image_path"))
         activity["created_at"] = activity["created_at"].isoformat() if activity["created_at"] else None
         activities.append(activity)
 

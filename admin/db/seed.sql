@@ -37,7 +37,7 @@ BEGIN
     'mafate',
     'Mafate',
     'Le cirque sauvage et préservé de La Réunion',
-    'https://www.ouest-lareunion.com/randonnee-mafate-sur-2-jours',
+    '/uploads/Mafate.png',
     'Lieux naturels',
     'https://example.com/mafate-guides',
     'Un cirque naturel accessible uniquement à pied, refuge historique des esclaves marrons.',
